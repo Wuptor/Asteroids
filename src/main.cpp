@@ -746,16 +746,20 @@ class Button : public Object
 {
 public:
 	SDL_Texture * usedButton;
+	SDL_Texture * currentlyUsed;
+	SDL_Texture * Highlighted;
 	bool mousepressed;
 	int ButtonID;
-	Button(int _id, float _x, float _y, float _width, float _height, SDL_Texture* _used)
+	Button(int _id, float _x, float _y, float _width, float _height, SDL_Texture* _used, SDL_Texture* _buttonHighlight)
 	{
 		ButtonID = _id;
 		posX = _x;
 		posY = _y;
 		width = _width;
 		height = _height;
+		currentlyUsed = _used;
 		usedButton = _used;
+		Highlighted = _buttonHighlight;
 		DrawObject = { (int)posX, (int)posY, width, height };
 	}
 	void handleEvent(SDL_Event* e)
@@ -784,12 +788,17 @@ public:
 			}
 			if (inside)
 			{
+				currentlyUsed = Highlighted;
 				switch (e->type)
 				{
 				case SDL_MOUSEBUTTONDOWN:
 					mousepressed = true;
 					break;
 				}
+			}
+			else
+			{
+				currentlyUsed = usedButton;
 			}
 		}
 	}
@@ -1066,16 +1075,18 @@ int main(int, char **)
 	SDL_Texture* Pickups = ImageImport("dat/PickupsSpritesheet.bmp", Renderer);
 	SDL_Texture* background = ImageImport("dat/Background.bmp", Renderer);
 
+	SDL_Texture* ButtonHighlight = ImageImport("dat/GreyOverlay.bmp", Renderer);
+
 	SDL_Texture* QuitButton = ImageImport("dat/QuitButton.bmp", Renderer);
 	SDL_Texture* PlayButton = ImageImport("dat/PlayButton.bmp", Renderer);
 	SDL_Texture* RestartButton = ImageImport("dat/RestartButton.bmp", Renderer);
 	SDL_Texture* startscreen = ImageImport("dat/startscreen.bmp", Renderer);
 
-	Button* a = new Button(1, 220, 250, 200, 50, PlayButton); 
+	Button* a = new Button(1, 220, 250, 200, 50, PlayButton, ButtonHighlight);
 	buttons.push_back(a);
-	Button* b = new Button(2, 220, 330, 200, 50, QuitButton);
+	Button* b = new Button(2, 220, 330, 200, 50, QuitButton, ButtonHighlight);
 	buttons.push_back(b);
-	Button* c = new Button(3, 220, 250, 200, 50, RestartButton);
+	Button* c = new Button(3, 220, 250, 200, 50, RestartButton, ButtonHighlight);
 	buttons.push_back(c);
 
 	bool Running = true;
@@ -1116,7 +1127,7 @@ int main(int, char **)
 			for (Button* b : buttons)
 			{
 				if (b->ID == 1 || b->ID == 2)
-				SDL_RenderCopy(Renderer, b->usedButton, NULL, &b->DrawObject);
+				SDL_RenderCopy(Renderer, b->currentlyUsed, NULL, &b->DrawObject);
 			}
 			SDL_RenderPresent(Renderer);
 		}
@@ -1151,7 +1162,7 @@ int main(int, char **)
 			for (Button* b : buttons)
 			{
 				if(b->ID == 2 || b->ID == 3)
-				SDL_RenderCopy(Renderer, b->usedButton, NULL, &b->DrawObject);
+				SDL_RenderCopy(Renderer, b->currentlyUsed, NULL, &b->DrawObject);
 			}
 			SDL_RenderPresent(Renderer);
 		}
