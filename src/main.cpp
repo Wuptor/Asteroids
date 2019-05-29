@@ -3,8 +3,10 @@
 #include <vector> // dynamischer Array
 #include <algorithm>
 #include <iterator>
+#include <string>
 
 #include "SDL.h"
+#include <SDL_ttf.h>
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -14,6 +16,8 @@ static int ObjectID = 1;
 int score = 0;
 int enemynumber = 1;
 std::vector<int> pickupn = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }; 
+bool pause;
+int temporaryScore = 0;
 
 class Object 
 {
@@ -1035,7 +1039,20 @@ int main(int, char **)
 {
 	const Uint8 *Keystate;
 	SDL_Init(SDL_INIT_EVERYTHING);
+	TTF_Init();
 	std::vector<Button*> buttons;
+	pause = false;
+
+	int fontsize = 24;
+	int t_width = 0;
+	int t_height = 0;
+	SDL_Color text_color = { 255,255,255 };
+	std::string fontpath = "dat/arial.ttf"; //arial irgendwas
+	std::string text = "test";
+	TTF_Font* font = TTF_OpenFont(fontpath.c_str(), fontsize);
+	int textPosX = 0;
+	int textPosY = 0;
+	SDL_Rect dst = { textPosX , textPosY, t_width, t_height };
 
 
 	SDL_Window * Window = SDL_CreateWindow("Asteroides", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0); 
@@ -1176,6 +1193,7 @@ int main(int, char **)
 			animations.clear();
 			pickupn.clear();
 			pickupn = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+			temporaryScore = 0;
 			Player player(playerShip, damagedPlayer);
 			Missile::missileSpeed = 4;
 			Missile::maxMissileSpeed = 8;
@@ -1262,9 +1280,20 @@ int main(int, char **)
 					switch (Event.type)
 					{
 					case SDL_QUIT:
+					{
 						MainGame = false;
 						Running = false;
 						break;
+					}
+					case SDL_KEYDOWN:
+					{
+						Keystate = SDL_GetKeyboardState(NULL);
+						if (Keystate[SDL_SCANCODE_P])
+						{
+							pause = true;
+						}
+						break;
+					}
 					}
 				}
 				Keystate = SDL_GetKeyboardState(NULL);
@@ -1276,8 +1305,7 @@ int main(int, char **)
 				}
 				if (Keystate[SDL_SCANCODE_UP]) {
 					player.thrust = true;
-				}
-				
+				}			
 				else
 				{
 					player.thrust = false;
@@ -1321,6 +1349,32 @@ int main(int, char **)
 					}
 				}
 
+				while (pause)
+				{
+					SDL_Event Event;
+					while (SDL_PollEvent(&Event)) // wait until event occured
+					{
+						switch (Event.type)
+						{
+						case SDL_QUIT:
+						{
+							MainGame = false;
+							Running = false;
+							break;
+						}
+						case SDL_KEYDOWN:
+						{
+							Keystate = SDL_GetKeyboardState(NULL);
+							if (Keystate[SDL_SCANCODE_P])
+							{
+								pause = false;
+							}
+							break;
+						}
+						}
+					}
+				}
+
 				if (player.targetSeeking == true) 
 				{
 					SearchForTarget(enemies); 
@@ -1338,6 +1392,7 @@ int main(int, char **)
 								missiles.at(i)->life = false;
 								asteroids.at(j)->life = false;
 								score += 10; 
+								temporaryScore += 10;
 								asteroids.at(j)->anim->playing = false; 
 								Animation* a = new Animation((int)asteroids.at(j)->posX - ((asteroids.at(j)->width + 30) / 2), (int)asteroids.at(j)->posY - ((asteroids.at(j)->width + 30) / 2), asteroids.at(j)->width + 30, asteroids.at(j)->height + 30, AsteroidDestruction, 4, 1, 0, 5);
 								animations.push_back(a);
@@ -1369,6 +1424,7 @@ int main(int, char **)
 										{
 											e->life = false; 
 											score += 20;
+											temporaryScore += 20;
 											Animation* a = new Animation((int)e->posX - 62, (int)e->posY - 62, 125, 125, ExplosionAnim, 6, 1, 0, 6);
 											animations.push_back(a);
 											TriggerSplitshot(player, missiles.at(i));
@@ -1384,6 +1440,7 @@ int main(int, char **)
 										{
 											e->life = false;
 											score += 20; 
+											temporaryScore += 20;
 											Animation* a = new Animation((int)e->posX - 62, (int)e->posY - 62, 125, 125, ExplosionAnim, 6, 1, 0, 6);
 											animations.push_back(a);
 											TriggerSplitshot(player, missiles.at(i));
@@ -1754,6 +1811,14 @@ int main(int, char **)
 						SDL_RenderCopyEx(Renderer, playerShield, NULL, &player.drawShield, player.rotation + 90, NULL, SDL_FLIP_NONE);
 					}
 				}
+				text = "Score: " + std::to_string(temporaryScore);
+				SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str() , text_color);
+				SDL_Texture* textTexture = SDL_CreateTextureFromSurface(Renderer, text_surface);
+				SDL_QueryTexture(textTexture, NULL, NULL, &t_width, &t_height);
+				SDL_FreeSurface(text_surface);
+			    dst = { textPosX , textPosY, t_width, t_height };
+				SDL_RenderCopy(Renderer, textTexture, NULL, &dst);
+
 				SDL_RenderPresent(Renderer);
 				if (TriggerEndGame == true)
 				{
