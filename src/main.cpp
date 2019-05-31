@@ -1292,6 +1292,11 @@ int main(int, char **)
 						{
 							pause = true;
 						}
+						if (Keystate[SDL_SCANCODE_R])
+						{
+							MainGame = false;
+							PreGame = true;
+						}
 						break;
 					}
 					}

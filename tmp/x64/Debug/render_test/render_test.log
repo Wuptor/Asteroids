@@ -72,14 +72,14 @@ c:\users\phglas\documents\repos\asteroids\src\main.cpp(1003): warning C4244: 'in
 c:\users\phglas\documents\repos\asteroids\src\main.cpp(1004): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 c:\users\phglas\documents\repos\asteroids\src\main.cpp(1008): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\users\phglas\documents\repos\asteroids\src\main.cpp(1009): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\src\main.cpp(1318): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\src\main.cpp(1320): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\src\main.cpp(1323): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\phglas\documents\repos\asteroids\src\main.cpp(1325): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\src\main.cpp(1327): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\src\main.cpp(1329): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\src\main.cpp(1330): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\src\main.cpp(1332): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\phglas\documents\repos\asteroids\src\main.cpp(1334): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\src\main.cpp(1336): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\src\main.cpp(1338): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\src\main.cpp(1340): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\src\main.cpp(1339): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\src\main.cpp(1341): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\src\main.cpp(1343): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 c:\users\phglas\documents\repos\asteroids\src\main.cpp(1345): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\src\main.cpp(1350): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   render_test.vcxproj -> C:\Users\phglas\Documents\Repos\Asteroids\build\vs2017\..\..\bin\x64\Debug\render_test\render_test.exe
