@@ -1,0 +1,27 @@
+﻿D:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(376,5): warning MSB8004: Intermediate Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Intermediate Directory.
+D:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  pch.cpp
+  Card.cpp
+  CardDeck.cpp
+  CardManager.cpp
+  ChosenCard.cpp
+  EventManager.cpp
+  HandCardPosition.cpp
+  PAS-Abgabe.cpp
+  Player.cpp
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\player.cpp(23): warning C4018: '<': signed/unsigned mismatch
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\player.cpp(37): warning C4018: '<': signed/unsigned mismatch
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\player.cpp(60): warning C4018: '<': signed/unsigned mismatch
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\player.cpp(100): warning C4018: '<': signed/unsigned mismatch
+  ResourceManager.cpp
+  Text.cpp
+  TurnManager.cpp
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\turnmanager.cpp(135): warning C4018: '<': signed/unsigned mismatch
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\turnmanager.cpp(163): warning C4018: '<': signed/unsigned mismatch
+  Generating code
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\turnmanager.cpp(125): warning C4715: 'TurnManager::CompareCards': not all control paths return a value
+  684 of 684 functions (100.0%) were compiled.
+    134 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  PAS-Abgabe.vcxproj -> D:\phili\Documents\repo\PAS-Abgabe\build\PAS-Abgabe\..\exe\x86\Release\PAS-Abgabe.exe

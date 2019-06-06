@@ -1,0 +1,19 @@
+﻿D:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  pch.cpp
+  Card.cpp
+  CardDeck.cpp
+  CardManager.cpp
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\cardmanager.cpp(19): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  ChosenCard.cpp
+  EventManager.cpp
+  HandCardPosition.cpp
+  PAS-Abgabe.cpp
+  Player.cpp
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\player.cpp(92): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  ResourceManager.cpp
+  Text.cpp
+  TurnManager.cpp
+  Generating Code...
+d:\phili\documents\repo\pas-abgabe\build\pas-abgabe\turnmanager.cpp(125): warning C4715: 'TurnManager::CompareCards': not all control paths return a value
+  LINK : ..\exe\x64\Debug\PAS-Abgabe.exe not found or not built by the last incremental link; performing full link
+  PAS-Abgabe.vcxproj -> D:\phili\Documents\repo\PAS-Abgabe\build\PAS-Abgabe\..\exe\x64\Debug\PAS-Abgabe.exe
