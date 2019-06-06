@@ -27,6 +27,8 @@
 //als erste lösung: alle listen static machen
 //big bugs:: asteroid spawn place, automatic restart, //life canister --> done aber noch nicht optimal
 //alle variablen leichter resetbar machen
+//double life loss bug lösen --> fürs erste denke ich gelöst
+//gleichzeitig gas und lenken
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -124,16 +126,58 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 			float x = rand() % SCREEN_WIDTH;
 			float y = rand() % SCREEN_HEIGHT;
 			Asteroid *a = new Asteroid(x, y, _wah, UsedAnim);
+			if (a->fx > 0 && a->fy == 0)
+			{
+				a->posX = -a->width;
+			}
+			else if(a->fx < 0 && a->fy == 0)
+			{
+				a->posX = SCREEN_WIDTH; //müsste eigentlich keinen unterschied machen
+			}
+			else if (a->fy > 0 && a->fx == 0)
+			{
+				a->posY = -a->width;
+			}
+			else if(a->fy < 0 && a->fx == 0)
+			{
+				a->posY = SCREEN_HEIGHT;
+			}
+			else
+			{
+				int random = rand() % 4;
+				if (random == 0)
+				{
+					a->posX = -a->width;
+				}
+				if (random == 1)
+				{
+					a->posY = -a->width;
+				}
+				if (random == 2)
+				{
+					a->posX = SCREEN_WIDTH;
+				}
+				if (random == 3)
+				{
+					a->posY = SCREEN_HEIGHT;
+				}
+			}
+			/*
+			float x = rand() % SCREEN_WIDTH;
+			float y = rand() % SCREEN_HEIGHT;
+			Asteroid *a = new Asteroid(x, y, _wah, UsedAnim);
 			while (x == P.posX || y == P.posY)
 			{
 				x = rand() % SCREEN_WIDTH;
 				y = rand() % SCREEN_HEIGHT;
 			}
+			*/
+			a->anim->updatePos(a->posX, a->posY, a->rotation);
 			Animation::animations.push_back(a->anim);
 			asteroids.push_back(a);
 		}
 	}
-	else
+	else //für die kleinen asteroids oder?
 	{
 		for (int i = 0; i < _aCount; i++)
 		{
@@ -228,6 +272,7 @@ int main(int, char **)
 	ResourceDatabase::Textures.insert(std::make_pair("pHealthFull", ResourceDatabase::ILoadImage("../../assets/PlayerHealthFull.bmp", Renderer)));
 	ResourceDatabase::Textures.insert(std::make_pair("pHealthEmpty", ResourceDatabase::ILoadImage("../../assets/PlayerHealthEmpty.bmp", Renderer)));
 
+	ResourceDatabase::Textures.insert(std::make_pair("PlayerSpriteSheet", ResourceDatabase::ILoadImage("../../assets/PlayerSpriteSheet.bmp", Renderer)));
 
 	Button* a = new Button(1, 220, 250, 200, 50, ResourceDatabase::Textures["PlayButton"], ResourceDatabase::Textures["ButtonHighlight"]);
 	buttons.push_back(a);
@@ -369,7 +414,7 @@ int main(int, char **)
 				if (asteroidSpawnCounter > 1)
 				{
 					asteroidspawnTime++;
-					if (asteroidspawnTime > 15)
+					if (asteroidspawnTime > (15-enemynumber))
 					{
 						SpawnAsteroids(player, 1, NULL, NULL, 75, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
 						asteroidSpawnCounter--;
@@ -616,15 +661,7 @@ int main(int, char **)
 							}
 							if (player.shieldActice == false)
 							{
-								player.lifeCount -= 1;
-								player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
-								if (player.lifeCount <= 0)
-								{
-									player.alive = false;
-									TriggerEndGame = true;
-									Animation* t = new Animation((int)player.posX - 50, (int)player.posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-									Animation::animations.push_back(t);
-								}
+								player.hitByEnemy = true;
 							}
 							TriggerKillRadius(asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
@@ -645,15 +682,7 @@ int main(int, char **)
 							}
 							if (player.shieldActice == false)
 							{
-								player.lifeCount -= 1;
-								player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
-								if (player.lifeCount <= 0)
-								{
-									player.alive = false;
-									TriggerEndGame = true;
-									Animation* t = new Animation((int)player.posX - 50, (int)player.posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-									Animation::animations.push_back(t);
-								}
+								player.hitByEnemy = true;
 							}
 							TriggerKillRadius(asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
@@ -673,15 +702,7 @@ int main(int, char **)
 							}
 							if (player.shieldActice == false)
 							{
-								player.lifeCount -= 1;
-								player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
-								if (player.lifeCount <= 0)
-								{
-									player.alive = false;
-									TriggerEndGame = true;
-									Animation* t = new Animation((int)player.posX - 50, (int)player.posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-									Animation::animations.push_back(t);
-								}
+								player.hitByEnemy = true;
 							}
 							TriggerKillRadius(asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
@@ -691,6 +712,21 @@ int main(int, char **)
 
 				}
 
+				
+				if (player.hitByEnemy)
+				{
+					player.hitByEnemy = false;
+					player.lifeCount -= 1;
+					player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
+					if (player.lifeCount <= 0)
+					{
+						player.alive = false;
+						TriggerEndGame = true;
+						Animation* t = new Animation((int)player.posX - 50, (int)player.posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
+						Animation::animations.push_back(t);
+					}
+				}
+				
 				for (Pickup *p : pickups)
 				{
 					p->Update();
