@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Missile.h"
 
+std::vector<Missile*> Missile::missiles;
 
 Missile::Missile(float X, float Y, int ROTATION)
 {
@@ -18,6 +19,10 @@ Missile::Missile(float X, float Y, int ROTATION)
 	enemyID = 0;
 }
 
+Missile::~Missile()
+{
+
+}
 
 void Missile::update() {
 	DrawObject = { (int)posX, (int)posY, 15, 20 };
@@ -41,4 +46,72 @@ void Missile::update() {
 	DrawObject.x = posX - DrawObject.w / 2;
 	DrawObject.y = posY - DrawObject.h / 2;
 	DeleteOnScreenExit();
+}
+
+void Missile::TriggerSplitshot()
+{
+	if (alreadysplit == false)
+	{
+		int ra = (int)rand() % 4 + 4; //splitcount noch woanders hinpacken //P.splitCount
+		for (int i = 0; i < ra; i++)
+		{
+			Missile *m1 = new Missile((int)posX, (int)posY, rand() % 360);
+			m1->alreadysplit = true;
+			Missile::missiles.push_back(m1);
+		}
+	}
+}
+
+void Missile::SearchForTarget(std::vector<Asteroid*> list)
+{
+	if (enemyID == 0)
+	{
+		int index = -1;
+		float distance = FLT_MAX;
+		for (int i = 0; i < list.size(); i++)
+		{
+			if (list.at(i)->targetID == 0)
+			{
+				list.at(i)->distance = sqrt(pow(posX - list.at(i)->posX, 2) + pow(posY - list.at(i)->posY, 2));
+				if (list.at(i)->distance <= distance)
+				{
+					index = i;
+					list.at(index)->distance = sqrt(pow(posX - list.at(index)->posX, 2) + pow(posY - list.at(index)->posY, 2));
+					distance = list.at(index)->distance;
+				}
+			}
+		}
+		if (list.size() != 0 && index >= 0)
+		{
+			enemyID = list.at(index)->ID;
+			list.at(index)->targetID = ID;
+		}
+	}
+}
+
+void Missile::SearchForTarget(std::vector<Enemy*> list)
+{
+	if (enemyID == 0)
+	{
+		int index = -1;
+		float distance = FLT_MAX;
+		for (int i = 0; i < list.size(); i++)
+		{
+			if (list.at(i)->targetID == 0)
+			{
+				list.at(i)->distance = sqrt(pow(posX - list.at(i)->posX, 2) + pow(posY - list.at(i)->posY, 2));
+				if (list.at(i)->distance <= distance)
+				{
+					index = i;
+					list.at(index)->distance = sqrt(pow(posX - list.at(index)->posX, 2) + pow(posY - list.at(index)->posY, 2));
+					distance = list.at(index)->distance;
+				}
+			}
+		}
+		if (list.size() != 0 && index >= 0)
+		{
+			enemyID = list.at(index)->ID;
+			list.at(index)->targetID = ID;
+		}
+	}
 }

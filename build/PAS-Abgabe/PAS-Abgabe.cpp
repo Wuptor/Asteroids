@@ -14,6 +14,8 @@
 #include "Player.h"
 #include "Missile.h"
 #include "Pickup.h"
+#include "Button.h"
+#include "Enemy.h"
 
 //missing game manager
 //missile manager usw?
@@ -23,6 +25,8 @@
 //enemy manager?
 //überlegen wie des mit den ganzen listen am besten gelöst werden kann
 //als erste lösung: alle listen static machen
+//big bugs:: asteroid spawn place, automatic restart, life canister 
+//alle variablen leichter resetbar machen
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -34,490 +38,11 @@ int enemynumber = 1;
 bool pause;
 int temporaryScore = 0;
 
-//std::vector<Animation*> animations;
-
-class EMissile : public Object //basically missile --> zusammenführen
-{
-public: float eMissileSpeed;
-		EMissile(float _x, float _y, int _rotation) : eMissileSpeed(2)
-		{
-			width = 20;
-			height = 20;
-			radius = 10;
-			posX = _x + (int)(20 * cos(_rotation * float(M_PI) / 180.0f));
-			posY = _y + (int)(20 * sin(_rotation * float(M_PI) / 180.0f));
-			rotation = _rotation;
-		}
-
-		void update() {
-
-			posX += eMissileSpeed * (cos((rotation*M_PI) / 180));
-			posY += eMissileSpeed * (sin((rotation*M_PI) / 180));
-			DrawObject = { (int)posX, (int)posY, width, height };
-
-			DrawObject.x = posX - DrawObject.w / 2;
-			DrawObject.y = posY - DrawObject.h / 2;
-			DeleteOnScreenExit();
-		}
-};
-
-std::vector<EMissile*> eMissiles;
-class Enemy : public Object //lifecount = 2
-{
-public: bool rotating, shielded, moving, turning, firstTurn, startCalculations;
-		float edirx, ediry, dist, espeed, ehyp, randomRotation, angleCopy, randomSpawnPos, xcounter, ycounter, distToSource, distToEnd, startrot, endrot, movedirecx, movedirecy, randomLength, distance;
-		int movementCounter, firerateCounter, eType, lifecount, targetID;
-		SDL_Texture* Used, *UsedShield, *Damaged;
-		SDL_Rect DrawShield;
-		Enemy(int EnemyType) : targetID(0), lifecount(2), startCalculations(true), startrot(0), endrot(0), movedirecx(0), movedirecy(0), distToEnd(0), distToSource(0), firstTurn(true), moving(false),
-			edirx(0), ediry(0), dist(0), espeed(0), ehyp(0), movementCounter(0), firerateCounter(0), shielded(false), rotating(true), turning(true), randomSpawnPos(0), angleCopy(0), randomRotation(0),
-			randomLength(0)
-		{
-			rotation = 0;
-			xcounter = 0;
-			ycounter = 0;
-			width = 65;
-			height = 65;
-			eType = EnemyType;
-			radius = 25;
-		}
-
-		void update(Player P)
-		{
-			if (lifecount == 1)
-			{
-				Used = Damaged;
-			}
-			if (eType == 0)
-			{
-				EnemyMovementPattern1(P);
-			}
-			if (eType == 1)
-			{
-				EnemyMovementPattern2();
-			}
-			if (eType == 2)
-			{
-				EnemyMovementPattern3();
-			}
-			if (eType == 3)
-			{
-				EnemyMovementPattern4(P);
-			}
-			if (eType == 4)
-			{
-				EnemyMovementPattern5();
-			}
-			DrawShield = { (int)posX, (int)posY, (width + 30), (height + 30) };
-			DrawObject = { (int)posX, (int)posY, width, height };
-
-			DrawObject.x = posX - DrawObject.w / 2;
-			DrawObject.y = posY - DrawObject.h / 2;
-
-			DrawShield.x = posX - DrawShield.w / 2;
-			DrawShield.y = posY - DrawShield.h / 2;
-
-		}
-		void SpawnPlayerTargetAlien(SDL_Texture* _used, SDL_Texture* _useds, SDL_Texture* _damaged)
-		{
-			randomSpawnPos = rand() % 4;
-			if (randomSpawnPos == 0) //obere linie
-			{
-				posX = 37 + rand() % (SCREEN_WIDTH - 75);
-				posY = 0 + 37;
-			}
-			if (randomSpawnPos == 1) // linke linie
-			{
-				posX = 0 + 37;
-				posY = 37 + rand() % (SCREEN_HEIGHT - 75);
-			}
-			if (randomSpawnPos == 2) //untere linie
-			{
-				posX = 37 + rand() % (SCREEN_WIDTH - 75);
-				posY = 37 + (SCREEN_HEIGHT - 75);
-			}
-			if (randomSpawnPos == 3) //rechte linie
-			{
-				posX = 37 + (SCREEN_WIDTH - 75);
-				posY = 37 + rand() % (SCREEN_HEIGHT - 75);
-			}
-			Used = _used;
-			UsedShield = _useds;
-			Damaged = _damaged;
-			while (randomRotation == 0)
-			{
-				randomRotation = rand() % 4 - 2;
-			}
-		}
-		void SpawnRapidFireAlien(SDL_Texture* _used, SDL_Texture* _useds, SDL_Texture* _damaged)
-		{
-			randomSpawnPos = rand() % 4;
-			if (randomSpawnPos == 0)
-			{
-				posX = 37 + rand() % (SCREEN_WIDTH - 75);
-				rotation = 90;
-				posY = 0 + 12;
-			}
-			if (randomSpawnPos == 1)
-			{
-				posX = 0 + 12;
-				rotation = 0;
-				posY = 37 + rand() % (SCREEN_HEIGHT - 75);
-			}
-			if (randomSpawnPos == 2)
-			{
-				posX = 37 + rand() % (SCREEN_WIDTH - 75);
-				rotation = 270;
-				posY = SCREEN_HEIGHT - 13;
-			}
-			if (randomSpawnPos == 3)
-			{
-				posX = SCREEN_WIDTH - 13;
-				rotation = 180;
-				posY = 37 + rand() % (SCREEN_HEIGHT - 75);
-			}
-			Used = _used;
-			UsedShield = _useds;
-			Damaged = _damaged;
-			rotation += 180;
-		}
-		void SpawnRapidRandomShotAlien(SDL_Texture* _used, SDL_Texture* _useds, SDL_Texture* _damaged)
-		{
-			posX = 162 + rand() % 315;
-			posY = 112 + rand() % 255;
-			while (randomRotation == 0)
-			{
-				randomRotation = rand() % 4 - 2;
-			}
-
-			Used = _used;
-			UsedShield = _useds;
-			Damaged = _damaged;
-		}
-		void SpawnHalfCircleShotAlien(SDL_Texture* _used, SDL_Texture* _useds, SDL_Texture* _damaged)
-		{
-			randomSpawnPos = rand() % 2;
-			if (randomSpawnPos == 0)
-			{
-				posX = 37 + rand() % (SCREEN_WIDTH - 75);
-				posY = 187 + rand() % 105;
-			}
-			if (randomSpawnPos == 1)
-			{
-				posX = 287 + rand() % 65;
-				posY = 37 + rand() % (SCREEN_HEIGHT - 75);
-			}
-			Used = _used;
-			UsedShield = _useds;
-			Damaged = _damaged;
-		}
-		void EnemyMovementPattern1(Object P)
-		{
-			rotation = atan2(P.posY - posY, P.posX - posX);
-			rotation = rotation * 180 / 3.14;
-			firerateCounter++;
-			if (firerateCounter > 60)
-			{
-				EMissile *em = new EMissile(posX, posY, rotation);
-				eMissiles.push_back(em);
-				firerateCounter = 0;
-			}
-		}
-		void EnemyMovementPattern2()
-		{
-			shielded = true;
-			firerateCounter++;
-			if (firerateCounter > 90) {
-				int randomMissileCount = rand() % 8 + 3;
-				for (int i = 0; i < randomMissileCount; i++)
-				{
-					EMissile* em = new EMissile(posX, posY, rand() % 360);
-					eMissiles.push_back(em);
-				}
-				firerateCounter = 0;
-			}
-			rotation += randomRotation * 0.5;
-		}
-		void EnemyMovementPattern3()
-		{
-			if (moving == true)
-			{
-				shielded = true;
-				movementCounter++;
-				if (startCalculations == true)
-				{
-					if (randomSpawnPos == 0) //oben
-					{
-						distToSource = sqrt(pow(posX - 0, 2) + pow(posY - 0, 2));
-						distToEnd = sqrt(pow(posX - SCREEN_WIDTH, 2) + pow(posY - 0, 2));
-					}
-					if (randomSpawnPos == 1) //linke
-					{
-						distToSource = sqrt(pow(posX - 0, 2) + pow(posY - 0, 2));
-						distToEnd = sqrt(pow(posX - 0, 2) + pow(posY - SCREEN_HEIGHT, 2));
-					}
-					if (randomSpawnPos == 2) // unten
-					{
-						distToSource = sqrt(pow(posX - 0, 2) + pow(posY - SCREEN_HEIGHT, 2));
-						distToEnd = sqrt(pow(posX - SCREEN_WIDTH, 2) + pow(posY - SCREEN_HEIGHT, 2));
-					}
-					if (randomSpawnPos == 3) //rechts
-					{
-						distToSource = sqrt(pow(posX - SCREEN_WIDTH, 2) + pow(posY - 0, 2));
-						distToEnd = sqrt(pow(posX - SCREEN_WIDTH, 2) + pow(posY - SCREEN_HEIGHT, 2));
-					}
-					if (randomSpawnPos == 1 || randomSpawnPos == 2)
-					{
-						if (distToSource > distToEnd)
-						{
-							startrot = -1;
-							endrot = 1;
-						}
-						else
-						{
-							startrot = 1;
-							endrot = -1;
-						}
-					}
-					if (randomSpawnPos == 0 || randomSpawnPos == 3)
-					{
-						if (distToSource > distToEnd)
-						{
-							startrot = +1;
-							endrot = -1;
-						}
-						else
-						{
-							startrot = -1;
-							endrot = +1;
-						}
-					}
-					if (randomSpawnPos == 0 || randomSpawnPos == 2)
-					{
-						randomLength = rand() % (SCREEN_WIDTH - 75);
-						if (distToSource > distToEnd)
-						{
-							movedirecx = -1;
-							randomLength = rand() % (int)(distToSource - 75);
-						}
-						else
-						{
-							movedirecx = 1;
-							randomLength = rand() % (int)(distToEnd - 75);
-						}
-					}
-					if (randomSpawnPos == 1 || randomSpawnPos == 3)
-					{
-						if (distToSource > distToEnd)
-						{
-							movedirecy = -1;
-							randomLength = rand() % (int)(distToSource - 75);
-						}
-						else
-						{
-							movedirecy = 1;
-							randomLength = rand() % (int)(distToEnd - 75);
-						}
-					}
-					startCalculations = false;
-				}
-				if (movementCounter < (255 + randomLength))
-				{
-					if (turning == true && angleCopy < 90 && firstTurn == true)
-					{
-						angleCopy += 1;
-						rotation += startrot;
-					}
-					else
-					{
-						turning = false;
-						firstTurn = false;
-						ycounter++;
-					}
-					if (turning == false && ycounter < (75 + randomLength))
-					{
-						posX += movedirecx;
-						posY += movedirecy;
-						angleCopy = 0;
-					}
-					else
-					{
-						turning = true;
-					}
-					if (turning == true && angleCopy < 90 && firstTurn == false)
-					{
-						rotation += endrot;
-						angleCopy += 1;
-					}
-				}
-				else
-				{
-					moving = false;
-					angleCopy = 0;
-					ycounter = 0;
-					firstTurn = true;
-					movementCounter = 0;
-					shielded = false;
-				}
-			}
-			if (moving == false)
-			{
-				firerateCounter++;
-				if (firerateCounter > 10)
-				{
-					EMissile* em = new EMissile(posX, posY, rotation + 180);
-					eMissiles.push_back(em);
-					firerateCounter = 0;
-					xcounter++;
-				}
-				if (xcounter > 30)
-				{
-					xcounter = 0;
-					moving = true;
-					startCalculations = true;
-				}
-			}
-		}
-		void EnemyMovementPattern4(Object P)
-		{
-			if (P.alive == true)
-			{
-				edirx = P.posX - posX;
-				ediry = P.posY - posY;
-
-				ehyp = sqrt(edirx*edirx + ediry * ediry);
-				edirx /= ehyp;
-				ediry /= ehyp;
-
-				posX += edirx * espeed;
-				posY += ediry * espeed;
-
-				dist = sqrt(pow(posX - P.posX, 2) + pow(posY - P.posY, 2));
-				if (dist < 200)
-				{
-					if (espeed < 7)
-					{
-						espeed += 0.05;
-					}
-					rotation += 2 * espeed;
-					shielded = false;
-				}
-				else
-				{
-					espeed = 2;
-					rotation += 2;
-					shielded = true;
-				}
-			}
-		}
-		void EnemyMovementPattern5()
-		{
-			randomRotation = (rand() % 720 + 240);
-			if (rotating == true)
-			{
-				if (angleCopy < randomRotation)
-				{
-					rotation += 1;
-					angleCopy += 1;
-					shielded = true;
-					movementCounter = 0;
-				}
-				else
-				{
-					rotating = false;
-					shielded = false;
-				}
-			}
-			if (rotating == false)
-			{
-				firerateCounter++;
-				if (firerateCounter > 30)
-				{
-					for (int i = 0; i < 9; i++)
-					{
-						EMissile* em = new EMissile(posX, posY, (rotation + i * 20) - 85);
-						eMissiles.push_back(em);
-					}
-					firerateCounter = 0;
-					movementCounter++;
-				}
-				if (movementCounter > 5)
-				{
-					rotating = true;
-					angleCopy = 0;
-				}
-			}
-		}
-};
-
-class Button : public Object //eventmanager einbauen --> button auf basis von eventmanager einabeun
-{
-public:
-	SDL_Texture * usedButton;
-	SDL_Texture * currentlyUsed;
-	SDL_Texture * Highlighted;
-	bool mousepressed;
-	int ButtonID;
-	Button(int _id, float _x, float _y, float _width, float _height, SDL_Texture* _used, SDL_Texture* _buttonHighlight)
-	{
-		ButtonID = _id;
-		posX = _x;
-		posY = _y;
-		width = _width;
-		height = _height;
-		currentlyUsed = _used;
-		usedButton = _used;
-		Highlighted = _buttonHighlight;
-		DrawObject = { (int)posX, (int)posY, width, height };
-	}
-	void handleEvent(SDL_Event* e)
-	{
-		if (e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP)
-		{
-			int x, y;
-			SDL_GetMouseState(&x, &y);
-			mousepressed = false;
-			bool inside = true;
-			if (x < posX)
-			{
-				inside = false;
-			}
-			else if (x > posX + width)
-			{
-				inside = false;
-			}
-			else if (y < posY)
-			{
-				inside = false;
-			}
-			else if (y > posY + height)
-			{
-				inside = false;
-			}
-			if (inside)
-			{
-				currentlyUsed = Highlighted;
-				switch (e->type)
-				{
-				case SDL_MOUSEBUTTONDOWN:
-					mousepressed = true;
-					break;
-				}
-			}
-			else
-			{
-				currentlyUsed = usedButton;
-			}
-		}
-	}
-};
-
 std::vector<Asteroid*> asteroids;
-std::vector<Missile*> missiles;
 std::vector<Pickup*> pickups;
 std::vector<Enemy*> enemies;
 
-bool CheckCollisionHCircle(Object* one, Object *second)
+bool CheckCollisionHCircle(Object* one, Object *second) //auch in object was ist one und was ist second?
 {
 
 	float b1 = second->posX - one->posX;
@@ -576,83 +101,6 @@ void TriggerKillRadius(std::vector<Enemy*> list, Player P, float killradius)
 			o->alive = false;
 	}
 
-}
-
-void TriggerSplitshot(Player P, Missile* M)
-{
-	if (P.splitShot == true && M->alreadysplit == false)
-	{
-		int ra = (int)rand() % P.splitCount + 4;
-		for (int i = 0; i < ra; i++)
-		{
-			Missile *m1 = new Missile((int)M->posX, (int)M->posY, rand() % 360);
-			m1->alreadysplit = true;
-			missiles.push_back(m1);
-		}
-	}
-}
-
-
-
-void SearchForTarget(std::vector<Asteroid*> list)
-{
-	for (int j = 0; j < missiles.size(); j++)
-	{
-		if (missiles.at(j)->enemyID == 0)
-		{
-			int index = -1;
-			float distance = FLT_MAX;
-			for (int i = 0; i < list.size(); i++)
-			{
-				if (list.at(i)->targetID == 0)
-				{
-					list.at(i)->distance = sqrt(pow(missiles.at(j)->posX - list.at(i)->posX, 2) + pow(missiles.at(j)->posY - list.at(i)->posY, 2));
-					if (list.at(i)->distance <= distance)
-					{
-						index = i;
-						list.at(index)->distance = sqrt(pow(missiles.at(j)->posX - list.at(index)->posX, 2) + pow(missiles.at(j)->posY - list.at(index)->posY, 2));
-						distance = list.at(index)->distance;
-					}
-				}
-			}
-			if (list.size() != 0 && index >= 0)
-			{
-				missiles.at(j)->enemyID = list.at(index)->ID;
-				list.at(index)->targetID = missiles.at(j)->ID;
-			}
-		}
-	}
-}
-
-
-void SearchForTarget(std::vector<Enemy*> list)
-{
-	for (int j = 0; j < missiles.size(); j++)
-	{
-		if (missiles.at(j)->enemyID == 0)
-		{
-			int index = -1;
-			float distance = FLT_MAX;
-			for (int i = 0; i < list.size(); i++)
-			{
-				if (list.at(i)->targetID == 0)
-				{
-					list.at(i)->distance = sqrt(pow(missiles.at(j)->posX - list.at(i)->posX, 2) + pow(missiles.at(j)->posY - list.at(i)->posY, 2));
-					if (list.at(i)->distance <= distance)
-					{
-						index = i;
-						list.at(index)->distance = sqrt(pow(missiles.at(j)->posX - list.at(index)->posX, 2) + pow(missiles.at(j)->posY - list.at(index)->posY, 2));
-						distance = list.at(index)->distance;
-					}
-				}
-			}
-			if (list.size() != 0 && index >= 0)
-			{
-				missiles.at(j)->enemyID = list.at(index)->ID;
-				list.at(index)->targetID = missiles.at(j)->ID;
-			}
-		}
-	}
 }
 
 
@@ -794,23 +242,23 @@ int main(int, char **)
 	{
 		while (MainMenu)
 		{
+			for (Button* b : buttons)
+			{
+				b->Update();
+				if (b->ID == 1 && EventManager::ButtonClicked(b->DrawObject))
+				{
+					PreGame = true;
+					MainMenu = false;
+				}
+				if (b->ID == 2 && EventManager::ButtonClicked(b->DrawObject))
+				{
+					Running = false;
+					MainMenu = false;
+				}
+			}
 			SDL_Event Event;
 			while (SDL_PollEvent(&Event))
 			{
-				for (Button* b : buttons)
-				{
-					b->handleEvent(&Event);
-					if (b->ID == 1 && b->mousepressed == true)
-					{
-						PreGame = true;
-						MainMenu = false;
-					}
-					if (b->ID == 2 && b->mousepressed == true)
-					{
-						Running = false;
-						MainMenu = false;
-					}
-				}
 				switch (Event.type)
 				{
 				case SDL_QUIT:
@@ -829,23 +277,23 @@ int main(int, char **)
 		}
 		while (RestartMenu)
 		{
+			for (Button* b : buttons)
+			{
+				b->Update();
+				if (b->ID == 3 && EventManager::ButtonClicked(b->DrawObject))
+				{
+					PreGame = true;
+					RestartMenu = false;
+				}
+				if (b->ID == 2 && EventManager::ButtonClicked(b->DrawObject))
+				{
+					Running = false;
+					RestartMenu = false;
+				}
+			}
 			SDL_Event Event;
 			while (SDL_PollEvent(&Event))
 			{
-				for (Button* b : buttons)
-				{
-					b->handleEvent(&Event);
-					if (b->ID == 3 && b->mousepressed == true)
-					{
-						PreGame = true;
-						RestartMenu = false;
-					}
-					if (b->ID == 2 && b->mousepressed == true)
-					{
-						Running = false;
-						RestartMenu = false;
-					}
-				}
 				switch (Event.type)
 				{
 				case SDL_QUIT:
@@ -865,10 +313,10 @@ int main(int, char **)
 		if (PreGame) //resets all values
 		{
 			asteroids.clear();
-			missiles.clear();
+			Missile::missiles.clear();
 			enemies.clear();
 			pickups.clear();
-			eMissiles.clear();
+			EMissile::eMissiles.clear();
 			Animation::animations.clear();
 			Pickup::pickupn.clear();
 			Pickup::pickupn = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -889,11 +337,11 @@ int main(int, char **)
 			while (MainGame)
 			{
 				player.update();
-				for (EMissile *em : eMissiles)
+				for (EMissile *em : EMissile::eMissiles)
 				{
 					em->update();
 				}
-				for (Missile *m : missiles)
+				for (Missile *m : Missile::missiles)
 				{
 					m->update();
 				}
@@ -1000,34 +448,34 @@ int main(int, char **)
 						if (player.doubleShot == true)
 						{
 							Missile *m = new Missile(player.posX, player.posY, player.rotation + 7);
-							missiles.push_back(m);
+							Missile::missiles.push_back(m);
 							Missile *m1 = new Missile(player.posX, player.posY, player.rotation - 7);
-							missiles.push_back(m1);
+							Missile::missiles.push_back(m1);
 						}
 						else if (player.tripleShot == true)
 						{
 							Missile *m = new Missile(player.posX, player.posY, player.rotation + 7);
-							missiles.push_back(m);
+							Missile::missiles.push_back(m);
 							Missile *m1 = new Missile(player.posX, player.posY, player.rotation);
-							missiles.push_back(m1);
+							Missile::missiles.push_back(m1);
 							Missile *m2 = new Missile(player.posX, player.posY, player.rotation - 7);
-							missiles.push_back(m2);
+							Missile::missiles.push_back(m2);
 						}
 						else if (player.quadrupleShot == true)
 						{
 							Missile *m = new Missile(player.posX, player.posY, player.rotation - 7);
-							missiles.push_back(m);
+							Missile::missiles.push_back(m);
 							Missile *m1 = new Missile(player.posX, player.posY, player.rotation - 2);
-							missiles.push_back(m1);
+							Missile::missiles.push_back(m1);
 							Missile *m2 = new Missile(player.posX, player.posY, player.rotation + 2);
-							missiles.push_back(m2);
+							Missile::missiles.push_back(m2);
 							Missile *m3 = new Missile(player.posX, player.posY, player.rotation + 7);
-							missiles.push_back(m3);
+							Missile::missiles.push_back(m3);
 						}
 						else
 						{
 							Missile *m = new Missile(player.posX, player.posY, player.rotation);
-							missiles.push_back(m);
+							Missile::missiles.push_back(m);
 						}
 						player.fireCounter = 0;
 					}
@@ -1061,19 +509,22 @@ int main(int, char **)
 
 				if (player.targetSeeking == true)
 				{
-					SearchForTarget(enemies);
-					SearchForTarget(asteroids);
+					for (Missile* m : Missile::missiles)
+					{
+						m->SearchForTarget(asteroids);
+						m->SearchForTarget(enemies);
+					}
 				}
 
-				for (int i = 0; i < missiles.size(); i++)
+				for (int i = 0; i < Missile::missiles.size(); i++)
 				{
 					for (int j = 0; j < asteroids.size(); j++)
 					{
-						if (missiles.at(i)->alive == true && asteroids.at(j)->alive == true)
+						if (Missile::missiles.at(i)->alive == true && asteroids.at(j)->alive == true)
 						{
-							if (missiles.at(i)->CheckCollision(asteroids.at(j)))
+							if (Missile::missiles.at(i)->CheckCollision(asteroids.at(j)))
 							{
-								missiles.at(i)->alive = false;
+								Missile::missiles.at(i)->alive = false;
 								asteroids.at(j)->alive = false;
 								score += 10;
 								temporaryScore += 10;
@@ -1081,7 +532,10 @@ int main(int, char **)
 								Animation* a = new Animation((int)asteroids.at(j)->posX - ((asteroids.at(j)->width + 30) / 2), (int)asteroids.at(j)->posY - ((asteroids.at(j)->width + 30) / 2), asteroids.at(j)->width + 30, asteroids.at(j)->height + 30, ResourceDatabase::Textures["AsteroidDestruction"], 4, 1, 0, 5);
 								Animation::animations.push_back(a);
 
-								TriggerSplitshot(player, missiles.at(i));
+								if (player.splitShot == true)
+								{
+									Missile::missiles.at(i)->TriggerSplitshot();
+								}
 								SpawnPickup(asteroids.at(j)->posX, asteroids.at(j)->posY, ResourceDatabase::Textures["Pickups"]);
 								if (asteroids.at(j)->width > 40 && player.megaShot == false) {
 									SpawnAsteroids(player, asteroids.at(j)->asteroidsInside, asteroids.at(j)->posX, asteroids.at(j)->posY, 30, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
@@ -1090,15 +544,15 @@ int main(int, char **)
 						}
 					}
 				}
-				for (int i = 0; i < missiles.size(); i++)
+				for (int i = 0; i < Missile::missiles.size(); i++)
 				{
 					for (Enemy* e : enemies)
 					{
-						if (missiles.at(i)->alive == true && e->alive == true)
+						if (Missile::missiles.at(i)->alive == true && e->alive == true)
 						{
-							if (missiles.at(i)->CheckCollision(e))
+							if (Missile::missiles.at(i)->CheckCollision(e))
 							{
-								missiles.at(i)->alive = false;
+								Missile::missiles.at(i)->alive = false;
 								if (e->eType != 1)
 								{
 									if (e->shielded == false || player.shieldBreak == true)
@@ -1111,13 +565,16 @@ int main(int, char **)
 											temporaryScore += 20;
 											Animation* a = new Animation((int)e->posX - 62, (int)e->posY - 62, 125, 125, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
 											Animation::animations.push_back(a);
-											TriggerSplitshot(player, missiles.at(i));
+											if (player.splitShot == true)
+											{
+												Missile::missiles.at(i)->TriggerSplitshot();
+											}
 										}
 									}
 								}
 								else
 								{
-									if (CheckCollisionHCircle(missiles.at(i), e) || player.shieldBreak == true)
+									if (CheckCollisionHCircle(Missile::missiles.at(i), e) || player.shieldBreak == true)
 									{
 										e->lifecount -= 1;
 										if (e->lifecount <= 0)
@@ -1127,7 +584,10 @@ int main(int, char **)
 											temporaryScore += 20;
 											Animation* a = new Animation((int)e->posX - 62, (int)e->posY - 62, 125, 125, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
 											Animation::animations.push_back(a);
-											TriggerSplitshot(player, missiles.at(i));
+											if (player.splitShot == true)
+											{
+												Missile::missiles.at(i)->TriggerSplitshot();
+											}
 											SpawnPickup(e->posX, e->posY, ResourceDatabase::Textures["Pickups"]);
 										}
 									}
@@ -1164,7 +624,7 @@ int main(int, char **)
 							}
 							TriggerKillRadius(asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
-							TriggerKillRadius(eMissiles, player, 150);
+							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
 					}
 
@@ -1192,11 +652,11 @@ int main(int, char **)
 							}
 							TriggerKillRadius(asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
-							TriggerKillRadius(eMissiles, player, 150);
+							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
 					}
 
-					for (EMissile *em : eMissiles)
+					for (EMissile *em : EMissile::eMissiles)
 					{
 						if (em->CheckCollision(&player))
 						{
@@ -1219,7 +679,7 @@ int main(int, char **)
 							}
 							TriggerKillRadius(asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
-							TriggerKillRadius(eMissiles, player, 150);
+							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
 					}
 
@@ -1275,7 +735,7 @@ int main(int, char **)
 						{
 							TriggerKillRadius(asteroids, player, 500);
 							TriggerKillRadius(enemies, player, 500);
-							TriggerKillRadius(eMissiles, player, 500);
+							TriggerKillRadius(EMissile::eMissiles, player, 500);
 							Animation* a = new Animation((int)player.posX - 250, (int)player.posY - 250, 500, 500, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
 							Animation::animations.push_back(a);
 						}
@@ -1345,7 +805,7 @@ int main(int, char **)
 					}
 				}
 
-				for (Missile *m : missiles)
+				for (Missile *m : Missile::missiles)
 				{
 					if (m->homing == true && m->enemyID != 0)
 					{
@@ -1363,7 +823,7 @@ int main(int, char **)
 						}
 					}
 				}
-				for (Missile *m : missiles)
+				for (Missile *m : Missile::missiles)
 				{
 					if (m->homing == true && m->enemyID != 0)
 					{
@@ -1383,11 +843,11 @@ int main(int, char **)
 				}
 				for (Asteroid *a : asteroids)
 				{
-					for (int i = 0; i < missiles.size(); i++)
+					for (int i = 0; i < Missile::missiles.size(); i++)
 					{
-						if (missiles.at(i)->ID == a->targetID)
+						if (Missile::missiles.at(i)->ID == a->targetID)
 						{
-							if (missiles.at(i)->alive == false)
+							if (Missile::missiles.at(i)->alive == false)
 							{
 								a->targetID = 0;
 							}
@@ -1397,11 +857,11 @@ int main(int, char **)
 
 				for (Enemy *e : enemies)
 				{
-					for (int i = 0; i < missiles.size(); i++)
+					for (int i = 0; i < Missile::missiles.size(); i++)
 					{
-						if (missiles.at(i)->ID == e->targetID)
+						if (Missile::missiles.at(i)->ID == e->targetID)
 						{
-							if (missiles.at(i)->alive == false)
+							if (Missile::missiles.at(i)->alive == false)
 							{
 								e->targetID = 0;
 							}
@@ -1418,10 +878,10 @@ int main(int, char **)
 						++itr;
 				}
 
-				for (std::vector<Missile*>::iterator itr = missiles.begin(); itr != missiles.end(); )
+				for (std::vector<Missile*>::iterator itr = Missile::missiles.begin(); itr != Missile::missiles.end(); )
 				{
 					if ((*itr)->alive == false)
-						itr = missiles.erase(itr);
+						itr = Missile::missiles.erase(itr);
 					else
 						++itr;
 				}
@@ -1442,10 +902,10 @@ int main(int, char **)
 						++itr;
 				}
 
-				for (std::vector<EMissile*>::iterator itr = eMissiles.begin(); itr != eMissiles.end(); )
+				for (std::vector<EMissile*>::iterator itr = EMissile::eMissiles.begin(); itr != EMissile::eMissiles.end(); )
 				{
 					if ((*itr)->alive == false)
-						itr = eMissiles.erase(itr);
+						itr = EMissile::eMissiles.erase(itr);
 					else
 						++itr;
 				}
@@ -1460,7 +920,7 @@ int main(int, char **)
 
 				SDL_RenderCopy(Renderer, ResourceDatabase::Textures["background"], NULL, NULL);
 
-				for (Missile* a : missiles)
+				for (Missile* a : Missile::missiles)
 				{
 					SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["missile"], NULL, &a->DrawObject, a->rotation + 90, NULL, SDL_FLIP_NONE);
 				}
@@ -1475,7 +935,7 @@ int main(int, char **)
 					if (a->playing == true)
 						SDL_RenderCopyEx(Renderer, a->Used, &a->Anim, &a->AnimPosition, a->rotation, NULL, SDL_FLIP_NONE);
 				}
-				for (EMissile* em : eMissiles)
+				for (EMissile* em : EMissile::eMissiles)
 				{
 					SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["eMissile"], NULL, &em->DrawObject, em->rotation, NULL, SDL_FLIP_NONE);
 				}

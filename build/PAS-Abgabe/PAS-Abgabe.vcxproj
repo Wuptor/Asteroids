@@ -172,6 +172,10 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Asteroid.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="EMissile.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="Missile.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="pch.h" />
@@ -182,6 +186,10 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Asteroid.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="EMissile.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Missile.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PAS-Abgabe.cpp" />

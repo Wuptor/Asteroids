@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Object.h"
 
-int Object::ObjectID = 0;
+int Object::ObjectID = 1; //object id usw fixen
 
 Object::Object() : ID(ObjectID), alive(true), posX(0), posY(0), width(0), height(0), rotation(0), radius(0)
 {

@@ -10,7 +10,6 @@ public:
 	float distance;
 	SDL_Rect DrawObject = { (int)posX, (int)posY, width, height };
 	Animation *anim;
-	Object *targeted;
-	int targetID, asteroidsInside, fx, fy;
+	int targetID, asteroidsInside, fx, fy; //asteroids inside evtl unnötig
 	void update();
 };

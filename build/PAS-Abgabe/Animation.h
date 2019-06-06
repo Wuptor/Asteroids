@@ -9,7 +9,7 @@ public:
 	~Animation();
 
 	static std::vector<Animation*> animations;
-	bool loop, playing;
+	bool loop, playing; //bool looping, play once, und was war des dritte? play und dann nicht löschen sondern nur dektivieren?
 	SDL_Texture* Used;
 	SDL_Rect Anim;
 	SDL_Rect AnimPosition;

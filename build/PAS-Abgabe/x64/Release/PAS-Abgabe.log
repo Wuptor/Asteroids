@@ -1,67 +1,24 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
   PAS-Abgabe.cpp
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(49): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(54): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(55): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(58): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(59): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(114): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(115): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(117): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(118): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(123): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(126): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(132): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(136): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(142): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(149): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(74): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(75): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(148): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(149): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(153): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(154): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(157): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(165): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(169): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(177): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(186): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(187): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(190): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(199): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(202): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(203): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(207): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(208): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(217): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(221): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(239): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(297): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(301): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(306): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(314): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(319): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(368): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(400): warning C4305: '+=': truncation from 'double' to 'float'
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(415): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(438): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(466): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(467): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(525): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(526): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(588): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(676): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(677): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(681): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(682): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1002): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1004): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1009): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1011): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1013): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1018): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1020): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1022): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1024): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(1029): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(474): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(476): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(481): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(483): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(485): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(490): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(492): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(494): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(496): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(501): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Generating code
-  0 of 969 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+  153 of 971 functions (15.8%) were compiled, the rest were copied from previous compilation.
+    4 functions were new in current compilation
+    88 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   PAS-Abgabe.vcxproj -> C:\Users\phglas\Documents\Repos\Asteroids\build\PAS-Abgabe\..\exe\x64\Release\PAS-Abgabe.exe
