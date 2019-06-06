@@ -10,8 +10,19 @@
 #include "SDL.h"
 #include <SDL_ttf.h>
 #include "ResourceDatabase.h"
-#include "Object.h"
+#include "Asteroid.h"
+#include "Player.h"
+#include "Missile.h"
+#include "Pickup.h"
 
+//missing game manager
+//missile manager usw?
+//alle funktionen in die jeweilig passenden klassen auslagern
+//timescale = 1 auf alle timebasierten sachen drauf multiplizieren --> für timeslow
+//frameanzahl unabhängig arbeiten
+//enemy manager?
+//überlegen wie des mit den ganzen listen am besten gelöst werden kann
+//als erste lösung: alle listen static machen
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -20,115 +31,12 @@
 static int ObjectID = 1;
 int score = 0;
 int enemynumber = 1;
-std::vector<int> pickupn = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 bool pause;
 int temporaryScore = 0;
 
+//std::vector<Animation*> animations;
 
-class Animation : public Object
-{
-public:
-	bool loop, playing;
-	SDL_Texture* Used;
-	SDL_Rect Anim;
-	SDL_Rect AnimPosition;
-	int FrameWidth, FrameHeight;
-	int TextureWidth, TextureHeight;
-	int frametime, animSpeed;
-
-	Animation(int startx, int starty, int animwidth, int animheight, SDL_Texture* _used, int Wmultiply, int Hmultiply, int _rotation, int _animspeed)
-	{
-		AnimPosition.w = animwidth;
-		AnimPosition.h = animheight;
-		AnimPosition.x = startx;
-		AnimPosition.y = starty;
-
-		SDL_QueryTexture(_used, NULL, NULL, &TextureWidth, &TextureHeight);
-		FrameWidth = TextureWidth / Wmultiply;
-		FrameHeight = TextureHeight / Hmultiply;
-
-		Anim.x = 0;
-		Anim.y = 0;
-		Anim.w = FrameWidth;
-		Anim.h = FrameHeight;
-
-		frametime = 0;
-		rotation = _rotation;
-		playing = true;
-		loop = false;
-		Used = _used;
-		animSpeed = _animspeed;
-	}
-
-	void update()
-	{
-		frametime++;
-		if (frametime == animSpeed && playing == true)
-		{
-			frametime = 0;
-			Anim.x += FrameWidth;
-			if (Anim.x >= TextureWidth)
-			{
-				Anim.x = 0;
-				Anim.y += FrameHeight;
-				if (Anim.y >= TextureHeight)
-				{
-					Anim.y = 0;
-					if (loop == false)
-					{
-						playing = false;
-					}
-				}
-			}
-		}
-	}
-	void updatePos(int x, int y, int _rotation)
-	{
-		AnimPosition.x = x - AnimPosition.w / 2;
-		AnimPosition.y = y - AnimPosition.h / 2;
-		rotation = _rotation;
-	}
-};
-
-std::vector<Animation*> animations;
-class Asteroid : public Object
-{
-public: float distance;
-		SDL_Rect DrawObject = { (int)posX, (int)posY, width, height };
-		Animation *anim;
-		Object *targeted;
-		int targetID, asteroidsInside, fx, fy;
-		Asteroid(float _x, float _y, int _wah, SDL_Texture* used) : asteroidsInside(2 + rand() % 3)
-		{
-			posX = _x;
-			posY = _y;
-			width = _wah;
-			height = _wah;
-			rotation = rand() % 360;
-			while (fx == 0 && fy == 0)
-			{
-				fx = rand() % 4 - 2;
-				fy = rand() % 4 - 2;
-			}
-			radius = _wah * 0.4;
-			anim = new Animation((int)posX, (int)posY, _wah, _wah, used, 7, 1, rotation, 6 + fx);
-			anim->loop = true;
-			animations.push_back(anim);
-			targetID = 0;
-		}
-		void update()
-		{
-			posX += fx;
-			posY += fy;
-			DrawObject = { (int)posX, (int)posY, width, height };
-			DrawObject.x = posX - DrawObject.w / 2;
-			DrawObject.y = posY - DrawObject.h / 2;
-			anim->updatePos(posX, posY, rotation);
-			KeepInField();
-		}
-};
-
-class EMissile : public Object
+class EMissile : public Object //basically missile --> zusammenführen
 {
 public: float eMissileSpeed;
 		EMissile(float _x, float _y, int _rotation) : eMissileSpeed(2)
@@ -151,86 +59,6 @@ public: float eMissileSpeed;
 			DrawObject.y = posY - DrawObject.h / 2;
 			DeleteOnScreenExit();
 		}
-};
-
-class Player : public Object
-{
-public:
-	bool thrust, doubleShot, tripleShot, quadrupleShot, splitShot, megaShot, targetSeeking, shieldBreak, playerShield, shieldActice;
-	float maxSpeed, Speed, floatingSpeed, turningSpeed, maxTurningSpeed, killRadius;
-	int fireCounter, fireRate, lifeCount, splitCount, shieldCounter, shieldActieTime, maxHealth, maxFireRate, keepRotation;
-	SDL_Rect drawShield;
-	SDL_Texture* Sprite;
-	SDL_Texture* NormalSprite;
-	SDL_Texture* DamagedSprite;
-	Player(SDL_Texture* _used, SDL_Texture* _damagedUsed) : splitCount(8), lifeCount(3), maxSpeed(5), Speed(1), floatingSpeed(0), keepRotation(0), turningSpeed(4), maxTurningSpeed(7), fireRate(25), fireCounter(0), shieldCounter(0),
-		shieldActieTime(0), maxHealth(10), maxFireRate(5),
-		thrust(false), doubleShot(false), tripleShot(false), quadrupleShot(false), splitShot(false), megaShot(false), targetSeeking(false), shieldBreak(false),
-		playerShield(false), shieldActice(false)
-	{
-		radius = 15;
-		posX = 200;
-		posY = 100;
-		width = 55;
-		height = 61;
-		NormalSprite = _used;
-		DamagedSprite = _damagedUsed;
-		Sprite = NormalSprite;
-	}
-	void update()
-	{
-		if (lifeCount == 1)
-		{
-			Sprite = DamagedSprite;
-		}
-		else {
-			Sprite = NormalSprite;
-		}
-		if (playerShield == true)
-		{
-			shieldCounter++;
-			if (shieldCounter > 360)
-			{
-				shieldActice = true;
-				shieldActieTime++;
-				if (shieldActieTime > 240)
-				{
-					shieldActice = false;
-					shieldCounter = 0;
-					shieldActieTime = 0;
-				}
-			}
-		}
-		if (thrust == true)
-		{
-			if (floatingSpeed > Speed)
-			{
-				floatingSpeed = Speed;
-			}
-			floatingSpeed += 1;
-			keepRotation = rotation;
-		}
-		else
-		{
-			if (floatingSpeed > Speed / 60)
-			{
-				floatingSpeed -= Speed / 60;
-			}
-		}
-
-		posX += floatingSpeed * (cos((keepRotation*M_PI) / 180));
-		posY += floatingSpeed * (sin((keepRotation*M_PI) / 180));
-
-		drawShield = { (int)posX, (int)posY, (height + 30), (height + 30) };
-		DrawObject = { (int)posX, (int)posY, width, height };
-
-		DrawObject.x = posX - DrawObject.w / 2;
-		DrawObject.y = posY - DrawObject.h / 2;
-
-		drawShield.x = posX - drawShield.w / 2;
-		drawShield.y = posY - drawShield.h / 2;
-		KeepInField();
-	}
 };
 
 std::vector<EMissile*> eMissiles;
@@ -622,104 +450,7 @@ public: bool rotating, shielded, moving, turning, firstTurn, startCalculations;
 		}
 };
 
-class Missile : public Object
-{
-public: bool alreadysplit, homing;
-		float direcx, direcy, mhyp, dist, mrotation, length, eposX, eposY;
-		static int missileSpeed, maxMissileSpeed;
-		int enemyID;
-
-		Missile(float X, float Y, int ROTATION)
-		{
-			if (X == NULL || Y == NULL)
-			{
-				posX = 100;
-				posY = 100;
-			}
-			posX = X + (int)(15 * cos(ROTATION * float(M_PI) / 180.0f));
-			posY = Y + (int)(15 * sin(ROTATION * float(M_PI) / 180.0f));
-			rotation = ROTATION;
-			radius = 15;
-			alreadysplit = false;
-			homing = true;
-			enemyID = 0;
-		}
-
-		void update() {
-			DrawObject = { (int)posX, (int)posY, 15, 20 };
-			direcx = (cos((rotation*M_PI) / 180));
-			direcy = (sin((rotation*M_PI) / 180));
-			posX += missileSpeed * direcx;
-			posY += missileSpeed * direcy;
-			if (enemyID != 0)
-			{
-				float difx = eposX - posX;
-				float dify = eposY - posY;
-				float dif = sqrt(pow(difx, 2) + pow(dify, 2));
-
-				float perpx = -direcy;
-				float perpy = direcx;
-				mrotation = atan2((perpx * difx + perpy * dify) / dif, (direcx * difx + direcy * dify) / dif);
-				mrotation = mrotation * 180 / 3.14;
-				rotation += mrotation / 10;
-			}
-
-			DrawObject.x = posX - DrawObject.w / 2;
-			DrawObject.y = posY - DrawObject.h / 2;
-			DeleteOnScreenExit();
-		}
-};
-
-
-class Pickup : public Object
-{
-public:
-	int spritePosX, spritePosY, lifeTime, TextureWidth, TextureHeight, FrameWidth, FrameHeight;
-	float rarity;
-	static float luck;
-	SDL_Rect SpriteSheet;
-	Pickup(float _x, float _y, SDL_Texture* _Used) : lifeTime(600)
-	{
-		SDL_QueryTexture(_Used, NULL, NULL, &TextureWidth, &TextureHeight);
-		FrameWidth = TextureWidth / 10;
-		FrameHeight = TextureHeight / 2;
-		posX = _x;
-		posY = _y;
-		SpawnPickup();
-		SpriteSheet.x = FrameWidth * spritePosX;
-		SpriteSheet.y = FrameHeight * spritePosY;
-		SpriteSheet.w = FrameWidth;
-		SpriteSheet.h = FrameHeight;
-		radius = 20;
-	}
-	void Update()
-	{
-		lifeTime--;
-		if (lifeTime <= 0)
-		{
-			alive = false;
-		}
-		DrawObject = { (int)posX, (int)posY, 25, 25 };
-		DrawObject.x = posX - DrawObject.w / 2;
-		DrawObject.y = posY - DrawObject.h / 2;
-	}
-	void SpawnPickup()
-	{
-		rarity = rand() % 10;
-		if (rarity <= luck)
-		{
-			spritePosX = (int)rand() % 6;
-			spritePosY = 1;
-		}
-		else
-		{
-			spritePosX = pickupn.at((int)rand() % pickupn.size());
-			spritePosY = 0;
-		}
-	}
-};
-
-class Button : public Object
+class Button : public Object //eventmanager einbauen --> button auf basis von eventmanager einabeun
 {
 public:
 	SDL_Texture * usedButton;
@@ -802,23 +533,6 @@ bool CheckCollisionHCircle(Object* one, Object *second)
 
 }
 
-bool CheckCollision(Object *one, Object *second)
-{
-	if ((one->posX - second->posX)*(one->posX - second->posX) + (one->posY - second->posY)* (one->posY - second->posY) <= (one->radius + second->radius)*(one->radius + second->radius))
-	{
-		return true;
-	}
-	return false;
-}
-
-SDL_Texture* ImageImport(const char* _dateiname, SDL_Renderer* _renderer)
-{
-	SDL_Surface *temp = SDL_LoadBMP(_dateiname);
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, temp);
-	SDL_FreeSurface(temp);
-	return texture;
-}
-
 void TriggerKillRadius(std::vector<Asteroid*> list, Player P, float killradius)
 {
 	Object Deathcircle;
@@ -827,7 +541,7 @@ void TriggerKillRadius(std::vector<Asteroid*> list, Player P, float killradius)
 	Deathcircle.radius = killradius;
 	for (Asteroid* o : list)
 	{
-		if (CheckCollision(o, &Deathcircle))
+		if (o->CheckCollision(&Deathcircle))
 		{
 			o->alive = false;
 			o->anim->playing = false;
@@ -844,7 +558,7 @@ void TriggerKillRadius(std::vector<EMissile*> list, Player P, float killradius)
 	Deathcircle.radius = killradius;
 	for (EMissile* o : list)
 	{
-		if (CheckCollision(o, &Deathcircle))
+		if (o->CheckCollision(&Deathcircle))
 			o->alive = false;
 	}
 
@@ -858,7 +572,7 @@ void TriggerKillRadius(std::vector<Enemy*> list, Player P, float killradius)
 	Deathcircle.radius = killradius;
 	for (Enemy* o : list)
 	{
-		if (CheckCollision(o, &Deathcircle))
+		if (o->CheckCollision(&Deathcircle))
 			o->alive = false;
 	}
 
@@ -910,6 +624,7 @@ void SearchForTarget(std::vector<Asteroid*> list)
 	}
 }
 
+
 void SearchForTarget(std::vector<Enemy*> list)
 {
 	for (int j = 0; j < missiles.size(); j++)
@@ -940,21 +655,6 @@ void SearchForTarget(std::vector<Enemy*> list)
 	}
 }
 
-void SpawnPickup(float _x, float _y, SDL_Texture* _used)
-{
-	if (pickups.size() <= 10)
-	{
-		if (rand() % 3 == 1)
-		{
-			Pickup *p = new Pickup(_x, _y, _used);
-			pickups.push_back(p);
-		}
-	}
-	else
-	{
-		pickups.erase(pickups.begin());
-	}
-}
 
 void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, SDL_Texture * _used1, SDL_Texture* _used2)
 {
@@ -981,6 +681,7 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 				x = rand() % SCREEN_WIDTH;
 				y = rand() % SCREEN_HEIGHT;
 			}
+			Animation::animations.push_back(a->anim);
 			asteroids.push_back(a);
 		}
 	}
@@ -998,11 +699,27 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 				UsedAnim = _used2;
 			}
 			Asteroid *a = new Asteroid(_posX, _posY, _wah, UsedAnim);
+			Animation::animations.push_back(a->anim);
 			asteroids.push_back(a);
 		}
 	}
 }
 
+void SpawnPickup(float _x, float _y, SDL_Texture* _used)
+{
+	if (pickups.size() <= 10)
+	{
+		if (rand() % 3 == 1)
+		{
+			Pickup *p = new Pickup(_x, _y, _used);
+			pickups.push_back(p);
+		}
+	}
+	else
+	{
+		pickups.erase(pickups.begin());
+	}
+}
 
 int Missile::missileSpeed = 0;
 int Missile::maxMissileSpeed = 0;
@@ -1026,7 +743,6 @@ int main(int, char **)
 	int textPosX = 0;
 	int textPosY = 0;
 	SDL_Rect dst = { textPosX , textPosY, t_width, t_height };
-
 
 	SDL_Window * Window = SDL_CreateWindow("Asteroides", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	SDL_Renderer * Renderer = SDL_CreateRenderer(Window, -1, SDL_RENDERER_PRESENTVSYNC);
@@ -1153,9 +869,9 @@ int main(int, char **)
 			enemies.clear();
 			pickups.clear();
 			eMissiles.clear();
-			animations.clear();
-			pickupn.clear();
-			pickupn = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+			Animation::animations.clear();
+			Pickup::pickupn.clear();
+			Pickup::pickupn = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 			temporaryScore = 0;
 			Player player(ResourceDatabase::Textures["playerShip"], ResourceDatabase::Textures["damagedPlayer"]);
 			Missile::missileSpeed = 4;
@@ -1189,7 +905,7 @@ int main(int, char **)
 				{
 					e->update(player);
 				}
-				for (Animation* y : animations)
+				for (Animation* y : Animation::animations)
 				{
 					y->update();
 				}
@@ -1355,7 +1071,7 @@ int main(int, char **)
 					{
 						if (missiles.at(i)->alive == true && asteroids.at(j)->alive == true)
 						{
-							if (CheckCollision(missiles.at(i), asteroids.at(j)))
+							if (missiles.at(i)->CheckCollision(asteroids.at(j)))
 							{
 								missiles.at(i)->alive = false;
 								asteroids.at(j)->alive = false;
@@ -1363,7 +1079,7 @@ int main(int, char **)
 								temporaryScore += 10;
 								asteroids.at(j)->anim->playing = false;
 								Animation* a = new Animation((int)asteroids.at(j)->posX - ((asteroids.at(j)->width + 30) / 2), (int)asteroids.at(j)->posY - ((asteroids.at(j)->width + 30) / 2), asteroids.at(j)->width + 30, asteroids.at(j)->height + 30, ResourceDatabase::Textures["AsteroidDestruction"], 4, 1, 0, 5);
-								animations.push_back(a);
+								Animation::animations.push_back(a);
 
 								TriggerSplitshot(player, missiles.at(i));
 								SpawnPickup(asteroids.at(j)->posX, asteroids.at(j)->posY, ResourceDatabase::Textures["Pickups"]);
@@ -1380,7 +1096,7 @@ int main(int, char **)
 					{
 						if (missiles.at(i)->alive == true && e->alive == true)
 						{
-							if (CheckCollision(missiles.at(i), e))
+							if (missiles.at(i)->CheckCollision(e))
 							{
 								missiles.at(i)->alive = false;
 								if (e->eType != 1)
@@ -1394,7 +1110,7 @@ int main(int, char **)
 											score += 20;
 											temporaryScore += 20;
 											Animation* a = new Animation((int)e->posX - 62, (int)e->posY - 62, 125, 125, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-											animations.push_back(a);
+											Animation::animations.push_back(a);
 											TriggerSplitshot(player, missiles.at(i));
 										}
 									}
@@ -1410,7 +1126,7 @@ int main(int, char **)
 											score += 20;
 											temporaryScore += 20;
 											Animation* a = new Animation((int)e->posX - 62, (int)e->posY - 62, 125, 125, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-											animations.push_back(a);
+											Animation::animations.push_back(a);
 											TriggerSplitshot(player, missiles.at(i));
 											SpawnPickup(e->posX, e->posY, ResourceDatabase::Textures["Pickups"]);
 										}
@@ -1426,14 +1142,14 @@ int main(int, char **)
 				{
 					for (Asteroid *a : asteroids)
 					{
-						if (CheckCollision(a, &player))
+						if (a->CheckCollision(&player))
 						{
 							a->alive = false;
 							a->anim->playing = false;
 							if (player.lifeCount > 1)
 							{
 								Animation* t = new Animation((int)player.posX - 150, (int)player.posY - 150, 300, 300, ResourceDatabase::Textures["shockWaveAnim"], 9, 1, 0, 3);
-								animations.push_back(t);
+								Animation::animations.push_back(t);
 							}
 							if (player.shieldActice == false)
 							{
@@ -1443,7 +1159,7 @@ int main(int, char **)
 									player.alive = false;
 									TriggerEndGame = true;
 									Animation* t = new Animation((int)player.posX - 50, (int)player.posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-									animations.push_back(t);
+									Animation::animations.push_back(t);
 								}
 							}
 							TriggerKillRadius(asteroids, player, 150);
@@ -1455,13 +1171,13 @@ int main(int, char **)
 
 					for (Enemy *e : enemies)
 					{
-						if (CheckCollision(e, &player))
+						if (e->CheckCollision(&player))
 						{
 							e->alive = false;
 							if (player.lifeCount > 1)
 							{
 								Animation* t = new Animation((int)player.posX - 150, (int)player.posY - 150, 300, 300, ResourceDatabase::Textures["shockWaveAnim"], 9, 1, 0, 3);
-								animations.push_back(t);
+								Animation::animations.push_back(t);
 							}
 							if (player.shieldActice == false)
 							{
@@ -1471,7 +1187,7 @@ int main(int, char **)
 									player.alive = false;
 									TriggerEndGame = true;
 									Animation* t = new Animation((int)player.posX - 50, (int)player.posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-									animations.push_back(t);
+									Animation::animations.push_back(t);
 								}
 							}
 							TriggerKillRadius(asteroids, player, 150);
@@ -1482,13 +1198,13 @@ int main(int, char **)
 
 					for (EMissile *em : eMissiles)
 					{
-						if (CheckCollision(em, &player))
+						if (em->CheckCollision(&player))
 						{
 							em->alive = false;
 							if (player.lifeCount > 1)
 							{
 								Animation* t = new Animation((int)player.posX - 150, (int)player.posY - 150, 300, 300, ResourceDatabase::Textures["shockWaveAnim"], 9, 1, 0, 3);
-								animations.push_back(t);
+								Animation::animations.push_back(t);
 							}
 							if (player.shieldActice == false)
 							{
@@ -1498,7 +1214,7 @@ int main(int, char **)
 									player.alive = false;
 									TriggerEndGame = true;
 									Animation* t = new Animation((int)player.posX - 50, (int)player.posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-									animations.push_back(t);
+									Animation::animations.push_back(t);
 								}
 							}
 							TriggerKillRadius(asteroids, player, 150);
@@ -1512,48 +1228,48 @@ int main(int, char **)
 				for (Pickup *p : pickups)
 				{
 					p->Update();
-					if (CheckCollision(p, &player))
+					if (p->CheckCollision(&player))
 					{
 						p->alive = false;
 						if (p->spritePosX == 0 && p->spritePosY == 0)
 						{
 							player.shieldBreak = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 0), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 7), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 8), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 0), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 7), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 8), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 1 && p->spritePosY == 0)
 						{
 							player.doubleShot = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 1), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 2), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 3), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 1), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 2), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 3), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 2 && p->spritePosY == 0)
 						{
 							player.tripleShot = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 1), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 2), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 3), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 1), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 2), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 3), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 3 && p->spritePosY == 0)
 						{
 							player.quadrupleShot = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 1), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 2), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 3), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 1), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 2), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 3), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 4 && p->spritePosY == 0)
 						{
 							player.targetSeeking = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 4), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 9), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 4), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 9), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 5 && p->spritePosY == 0)
 						{
 							player.megaShot = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 4), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 5), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 4), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 5), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 6 && p->spritePosY == 0)
 						{
@@ -1561,27 +1277,27 @@ int main(int, char **)
 							TriggerKillRadius(enemies, player, 500);
 							TriggerKillRadius(eMissiles, player, 500);
 							Animation* a = new Animation((int)player.posX - 250, (int)player.posY - 250, 500, 500, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
-							animations.push_back(a);
+							Animation::animations.push_back(a);
 						}
 						if (p->spritePosX == 7 && p->spritePosY == 0)
 						{
 							//timeslow
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 0), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 7), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 8), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 0), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 7), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 8), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 8 && p->spritePosY == 0)
 						{
 							player.playerShield = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 0), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 7), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 8), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 0), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 7), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 8), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 9 && p->spritePosY == 0)
 						{
 							player.splitShot = true;
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 5), pickupn.end());
-							pickupn.erase(std::remove(pickupn.begin(), pickupn.end(), 9), pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 5), Pickup::pickupn.end());
+							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 9), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 0 && p->spritePosY == 1)
 						{
@@ -1734,10 +1450,10 @@ int main(int, char **)
 						++itr;
 				}
 
-				for (std::vector<Animation*>::iterator itr = animations.begin(); itr != animations.end(); )
+				for (std::vector<Animation*>::iterator itr = Animation::animations.begin(); itr != Animation::animations.end(); )
 				{
 					if ((*itr)->playing == false)
-						itr = animations.erase(itr);
+						itr = Animation::animations.erase(itr);
 					else
 						++itr;
 				}
@@ -1754,7 +1470,7 @@ int main(int, char **)
 					SDL_RenderCopy(Renderer, ResourceDatabase::Textures["Pickups"], &p->SpriteSheet, &p->DrawObject);
 				}
 
-				for (Animation* a : animations)
+				for (Animation* a : Animation::animations)
 				{
 					if (a->playing == true)
 						SDL_RenderCopyEx(Renderer, a->Used, &a->Anim, &a->AnimPosition, a->rotation, NULL, SDL_FLIP_NONE);

@@ -4,7 +4,7 @@
 
 std::map<std::string, SDL_Texture*> ResourceDatabase::Textures;
 
-SDL_Texture* ResourceDatabase::ILoadImage(const char* _dateiname, SDL_Renderer* _renderer)
+SDL_Texture* ResourceDatabase::ILoadImage(const char* _dateiname, SDL_Renderer* _renderer) //ImageImport rename?
 {
 	SDL_Surface* temp = SDL_LoadBMP(_dateiname);
 	if (temp == nullptr)
