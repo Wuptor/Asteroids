@@ -25,7 +25,7 @@
 //enemy manager?
 //überlegen wie des mit den ganzen listen am besten gelöst werden kann
 //als erste lösung: alle listen static machen
-//big bugs:: asteroid spawn place, automatic restart, life canister 
+//big bugs:: asteroid spawn place, automatic restart, //life canister --> done aber noch nicht optimal
 //alle variablen leichter resetbar machen
 
 #define SCREEN_WIDTH  640 
@@ -224,6 +224,9 @@ int main(int, char **)
 	ResourceDatabase::Textures.insert(std::make_pair("PlayButton", ResourceDatabase::ILoadImage("../../assets/PlayButton.bmp", Renderer)));
 	ResourceDatabase::Textures.insert(std::make_pair("RestartButton", ResourceDatabase::ILoadImage("../../assets/RestartButton.bmp", Renderer)));
 	ResourceDatabase::Textures.insert(std::make_pair("startscreen", ResourceDatabase::ILoadImage("../../assets/startscreen.bmp", Renderer)));
+
+	ResourceDatabase::Textures.insert(std::make_pair("pHealthFull", ResourceDatabase::ILoadImage("../../assets/PlayerHealthFull.bmp", Renderer)));
+	ResourceDatabase::Textures.insert(std::make_pair("pHealthEmpty", ResourceDatabase::ILoadImage("../../assets/PlayerHealthEmpty.bmp", Renderer)));
 
 
 	Button* a = new Button(1, 220, 250, 200, 50, ResourceDatabase::Textures["PlayButton"], ResourceDatabase::Textures["ButtonHighlight"]);
@@ -614,6 +617,7 @@ int main(int, char **)
 							if (player.shieldActice == false)
 							{
 								player.lifeCount -= 1;
+								player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
 								if (player.lifeCount <= 0)
 								{
 									player.alive = false;
@@ -642,6 +646,7 @@ int main(int, char **)
 							if (player.shieldActice == false)
 							{
 								player.lifeCount -= 1;
+								player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
 								if (player.lifeCount <= 0)
 								{
 									player.alive = false;
@@ -669,6 +674,7 @@ int main(int, char **)
 							if (player.shieldActice == false)
 							{
 								player.lifeCount -= 1;
+								player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
 								if (player.lifeCount <= 0)
 								{
 									player.alive = false;
@@ -783,8 +789,17 @@ int main(int, char **)
 						}
 						if (p->spritePosX == 3 && p->spritePosY == 1)
 						{
+							if (player.maxHealth < 7)
+							{
+								player.maxHealth++;
+								Object health;
+								health.texture = ResourceDatabase::Textures["pHealthEmpty"];
+								health.DrawObject = { 615 - ((int)player.playerHealth.size() * 25),5,20,40 }; 
+								player.playerHealth.push_back(health);
+							}
 							if (player.lifeCount < player.maxHealth)
 							{
+								player.playerHealth.at(player.lifeCount).texture = ResourceDatabase::Textures["pHealthFull"];
 								player.lifeCount += 1;
 							}
 						}
@@ -954,6 +969,10 @@ int main(int, char **)
 					{
 						SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["playerShield"], NULL, &player.drawShield, player.rotation + 90, NULL, SDL_FLIP_NONE);
 					}
+				}
+				for (Object o : player.playerHealth)
+				{
+					SDL_RenderCopy(Renderer, o.texture, NULL, &o.DrawObject);
 				}
 				text = "Score: " + std::to_string(temporaryScore);
 				SDL_Surface* text_surface = TTF_RenderText_Solid(font, text.c_str(), text_color);

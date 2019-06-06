@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+#include "ResourceDatabase.h"
 
 class Player : public Object
 {
@@ -13,5 +14,6 @@ public:
 	SDL_Texture* Sprite;
 	SDL_Texture* NormalSprite;
 	SDL_Texture* DamagedSprite;
+	std::vector<Object> playerHealth;
 	void update();
 };

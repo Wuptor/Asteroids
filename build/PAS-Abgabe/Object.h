@@ -18,6 +18,7 @@ public:
 	int width, height;
 	bool alive;
 	SDL_Rect DrawObject;
+	SDL_Texture* texture;
 	void KeepInField();
 	void DeleteOnScreenExit();
 	bool CheckCollision(Object* _other);

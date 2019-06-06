@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "Player.h"
-
+//maxhealth funktion anpassen
 
 Player::Player(SDL_Texture* _used, SDL_Texture* _damagedUsed) : splitCount(8), lifeCount(3), maxSpeed(5), Speed(1), floatingSpeed(0), keepRotation(0), turningSpeed(4), maxTurningSpeed(7), fireRate(25), fireCounter(0), shieldCounter(0),
-shieldActieTime(0), maxHealth(10), maxFireRate(5),
+shieldActieTime(0), maxHealth(3), maxFireRate(5),
 thrust(false), doubleShot(false), tripleShot(false), quadrupleShot(false), splitShot(false), megaShot(false), targetSeeking(false), shieldBreak(false),
 playerShield(false), shieldActice(false)
 {
@@ -15,6 +15,13 @@ playerShield(false), shieldActice(false)
 	NormalSprite = _used;
 	DamagedSprite = _damagedUsed;
 	Sprite = NormalSprite;
+	for (int i = 0; i < maxHealth; i++)
+	{
+		Object health;
+		health.texture = ResourceDatabase::Textures["pHealthFull"];
+		health.DrawObject = {615 - (i*25),5,20,40};
+		playerHealth.push_back(health);
+	}
 }
 
 

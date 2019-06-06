@@ -1,24 +1,24 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
   PAS-Abgabe.cpp
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(74): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(75): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(148): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(149): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(153): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(154): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(474): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(476): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(481): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(483): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(485): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(490): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(492): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(494): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(496): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(501): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(50): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(51): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(124): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(125): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(129): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(130): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(453): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(455): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(460): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(462): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(464): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(469): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(471): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(473): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(475): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(480): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Generating code
-  153 of 971 functions (15.8%) were compiled, the rest were copied from previous compilation.
-    4 functions were new in current compilation
-    88 functions had inline decision re-evaluated but remain unchanged
+  1 of 1059 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   PAS-Abgabe.vcxproj -> C:\Users\phglas\Documents\Repos\Asteroids\build\PAS-Abgabe\..\exe\x64\Release\PAS-Abgabe.exe
