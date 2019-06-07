@@ -3,7 +3,7 @@
 
 std::vector<EMissile*> EMissile::eMissiles;
 
-EMissile::EMissile(float _x, float _y, int _rotation) : eMissileSpeed(2)
+EMissile::EMissile(float _x, float _y, int _rotation) : eMissileSpeed(2), Object(emissile)
 {
 	width = 20;
 	height = 20;

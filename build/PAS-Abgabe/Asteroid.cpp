@@ -2,7 +2,7 @@
 #include "Asteroid.h"
 
 
-Asteroid::Asteroid(float _x, float _y, int _wah, SDL_Texture* used) : asteroidsInside(2 + rand() % 3)
+Asteroid::Asteroid(float _x, float _y, int _wah, SDL_Texture* used) : asteroidsInside(2 + rand() % 3), Object(asteroid)
 {
 	posX = _x;
 	posY = _y;

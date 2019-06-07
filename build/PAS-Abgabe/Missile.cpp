@@ -3,7 +3,7 @@
 
 std::vector<Missile*> Missile::missiles;
 
-Missile::Missile(float X, float Y, int ROTATION)
+Missile::Missile(float X, float Y, int ROTATION) : Object(missile)
 {
 	if (X == NULL || Y == NULL) //warum?
 	{
@@ -17,6 +17,7 @@ Missile::Missile(float X, float Y, int ROTATION)
 	alreadysplit = false;
 	homing = true;
 	enemyID = 0;
+	testLeftoverCounter = 0;
 }
 
 Missile::~Missile()
@@ -58,6 +59,11 @@ void Missile::TriggerSplitshot()
 			Missile *m1 = new Missile((int)posX, (int)posY, rand() % 360);
 			m1->alreadysplit = true;
 			Missile::missiles.push_back(m1);
+			/*
+			Object _missile(missile);
+			_missile.SetPosAndRot((int)posX, (int)posY, rand() % 360);
+			Object::Entities->push_back(_missile);
+			*/
 		}
 	}
 }
@@ -88,6 +94,7 @@ void Missile::SearchForTarget(std::vector<Asteroid*> list)
 		}
 	}
 }
+
 
 void Missile::SearchForTarget(std::vector<Enemy*> list)
 {

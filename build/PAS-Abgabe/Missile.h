@@ -9,11 +9,12 @@ public:
 	Missile(float X, float Y, int ROTATION);
 	~Missile();
 	static std::vector<Missile*> missiles;
+	std::vector<Object> targetSeekingLeftovers;
 	bool alreadysplit, homing;
 	float direcx, direcy, mhyp, dist, mrotation, length, eposX, eposY;
 	static int missileSpeed, maxMissileSpeed;
-	int enemyID;
-	void update();
+	int enemyID, testLeftoverCounter;
+	void update() override;
 	void TriggerSplitshot();
 	void SearchForTarget(std::vector<Asteroid*> list);
 	void SearchForTarget(std::vector<Enemy*> list);

@@ -3,7 +3,7 @@
 
 std::vector<Animation*> Animation::animations;
 
-Animation::Animation(int startx, int starty, int animwidth, int animheight, SDL_Texture* _used, int Wmultiply, int Hmultiply, int _rotation, int _animspeed)
+Animation::Animation(int startx, int starty, int animwidth, int animheight, SDL_Texture* _used, int Wmultiply, int Hmultiply, int _rotation, int _animspeed) : Object(neutral)
 {
 	AnimPosition.w = animwidth;
 	AnimPosition.h = animheight;

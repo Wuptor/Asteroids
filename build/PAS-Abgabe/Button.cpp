@@ -2,7 +2,7 @@
 #include "Button.h"
 
 
-Button::Button(int _id, float _x, float _y, float _width, float _height, SDL_Texture* _used, SDL_Texture* _buttonHighlight)
+Button::Button(int _id, float _x, float _y, float _width, float _height, SDL_Texture* _used, SDL_Texture* _buttonHighlight) : Object(neutral)
 {
 	ButtonID = _id;
 	posX = _x;

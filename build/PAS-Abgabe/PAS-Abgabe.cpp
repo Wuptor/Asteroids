@@ -10,12 +10,12 @@
 #include "SDL.h"
 #include <SDL_ttf.h>
 #include "ResourceDatabase.h"
-#include "Asteroid.h"
+//#include "Asteroid.h"
 #include "Player.h"
-#include "Missile.h"
+//#include "Missile.h"
 #include "Pickup.h"
 #include "Button.h"
-#include "Enemy.h"
+//#include "Enemy.h"
 
 //missing game manager
 //missile manager usw?
@@ -28,7 +28,10 @@
 //big bugs:: asteroid spawn place, automatic restart, //life canister --> done aber noch nicht optimal
 //alle variablen leichter resetbar machen
 //double life loss bug lösen --> fürs erste denke ich gelöst
-//gleichzeitig gas und lenken
+//gleichzeitig gas und lenken --> am anfang des frames prüfen welche knöpfe gedrückt sind
+//links lenken und schießen geht wegen ghosting nicht --> evlt versuchen zu tricksen oder alternative tastaturbelegung erlauben#
+//file read and write
+//überlegen ob/wie es sinn macht alle objects über eine list zu verwalten
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -60,9 +63,10 @@ bool CheckCollisionHCircle(Object* one, Object *second) //auch in object was ist
 
 }
 
+
 void TriggerKillRadius(std::vector<Asteroid*> list, Player P, float killradius)
 {
-	Object Deathcircle;
+	Object Deathcircle(Object::Type::neutral);
 	Deathcircle.posX = P.posX;
 	Deathcircle.posY = P.posY;
 	Deathcircle.radius = killradius;
@@ -74,12 +78,11 @@ void TriggerKillRadius(std::vector<Asteroid*> list, Player P, float killradius)
 			o->anim->playing = false;
 		}
 	}
-
 }
 
 void TriggerKillRadius(std::vector<EMissile*> list, Player P, float killradius)
 {
-	Object Deathcircle;
+	Object Deathcircle(Object::Type::neutral);
 	Deathcircle.posX = P.posX;
 	Deathcircle.posY = P.posY;
 	Deathcircle.radius = killradius;
@@ -93,7 +96,7 @@ void TriggerKillRadius(std::vector<EMissile*> list, Player P, float killradius)
 
 void TriggerKillRadius(std::vector<Enemy*> list, Player P, float killradius)
 {
-	Object Deathcircle;
+	Object Deathcircle(Object::Type::neutral);
 	Deathcircle.posX = P.posX;
 	Deathcircle.posY = P.posY;
 	Deathcircle.radius = killradius;
@@ -268,11 +271,12 @@ int main(int, char **)
 	ResourceDatabase::Textures.insert(std::make_pair("PlayButton", ResourceDatabase::ILoadImage("../../assets/PlayButton.bmp", Renderer)));
 	ResourceDatabase::Textures.insert(std::make_pair("RestartButton", ResourceDatabase::ILoadImage("../../assets/RestartButton.bmp", Renderer)));
 	ResourceDatabase::Textures.insert(std::make_pair("startscreen", ResourceDatabase::ILoadImage("../../assets/startscreen.bmp", Renderer)));
-
 	ResourceDatabase::Textures.insert(std::make_pair("pHealthFull", ResourceDatabase::ILoadImage("../../assets/PlayerHealthFull.bmp", Renderer)));
 	ResourceDatabase::Textures.insert(std::make_pair("pHealthEmpty", ResourceDatabase::ILoadImage("../../assets/PlayerHealthEmpty.bmp", Renderer)));
 
-	ResourceDatabase::Textures.insert(std::make_pair("PlayerSpriteSheet", ResourceDatabase::ILoadImage("../../assets/PlayerSpriteSheet.bmp", Renderer)));
+	ResourceDatabase::Textures.insert(std::make_pair("TargetSeekingLeftovers", ResourceDatabase::ILoadImage("../../assets/AsteroidsTargetSeeking.bmp", Renderer)));
+
+	//ResourceDatabase::Textures.insert(std::make_pair("PlayerSpriteSheet", ResourceDatabase::ILoadImage("../../assets/PlayerSpriteSheet.bmp", Renderer)));
 
 	Button* a = new Button(1, 220, 250, 200, 50, ResourceDatabase::Textures["PlayButton"], ResourceDatabase::Textures["ButtonHighlight"]);
 	buttons.push_back(a);
@@ -385,6 +389,12 @@ int main(int, char **)
 			while (MainGame)
 			{
 				player.update();
+				/* 
+				for (int i = 0; i < Object::Entities->size(); i++)
+				{
+					Object::Entities->at(i).update();
+				}
+				*/
 				for (EMissile *em : EMissile::eMissiles)
 				{
 					em->update();
@@ -405,7 +415,7 @@ int main(int, char **)
 				{
 					y->update();
 				}
-
+				
 
 				if (rand() % 150 == 0)
 				{
@@ -472,64 +482,17 @@ int main(int, char **)
 							MainGame = false;
 							PreGame = true;
 						}
+						if (Keystate[SDL_SCANCODE_ESCAPE])
+						{
+							MainGame = false;
+							Running = false;
+						}
 						break;
 					}
 					}
 				}
-				Keystate = SDL_GetKeyboardState(NULL);
-				if (Keystate[SDL_SCANCODE_LEFT]) {
-					player.rotation -= player.turningSpeed;
-				}
-				if (Keystate[SDL_SCANCODE_RIGHT]) {
-					player.rotation += player.turningSpeed;
-				}
-				if (Keystate[SDL_SCANCODE_UP]) {
-					player.thrust = true;
-				}
-				else
-				{
-					player.thrust = false;
-				}
-				player.fireCounter++;
-				if (player.fireCounter > player.fireRate && player.alive == true) {
-					if (Keystate[SDL_SCANCODE_SPACE]) {
-						if (player.doubleShot == true)
-						{
-							Missile *m = new Missile(player.posX, player.posY, player.rotation + 7);
-							Missile::missiles.push_back(m);
-							Missile *m1 = new Missile(player.posX, player.posY, player.rotation - 7);
-							Missile::missiles.push_back(m1);
-						}
-						else if (player.tripleShot == true)
-						{
-							Missile *m = new Missile(player.posX, player.posY, player.rotation + 7);
-							Missile::missiles.push_back(m);
-							Missile *m1 = new Missile(player.posX, player.posY, player.rotation);
-							Missile::missiles.push_back(m1);
-							Missile *m2 = new Missile(player.posX, player.posY, player.rotation - 7);
-							Missile::missiles.push_back(m2);
-						}
-						else if (player.quadrupleShot == true)
-						{
-							Missile *m = new Missile(player.posX, player.posY, player.rotation - 7);
-							Missile::missiles.push_back(m);
-							Missile *m1 = new Missile(player.posX, player.posY, player.rotation - 2);
-							Missile::missiles.push_back(m1);
-							Missile *m2 = new Missile(player.posX, player.posY, player.rotation + 2);
-							Missile::missiles.push_back(m2);
-							Missile *m3 = new Missile(player.posX, player.posY, player.rotation + 7);
-							Missile::missiles.push_back(m3);
-						}
-						else
-						{
-							Missile *m = new Missile(player.posX, player.posY, player.rotation);
-							Missile::missiles.push_back(m);
-						}
-						player.fireCounter = 0;
-					}
-				}
-
-				while (pause)
+			
+				while (pause) //funktioniert noch nicht ganz optimal
 				{
 					SDL_Event Event;
 					while (SDL_PollEvent(&Event)) // wait until event occured
@@ -549,6 +512,11 @@ int main(int, char **)
 							{
 								pause = false;
 							}
+							if (Keystate[SDL_SCANCODE_ESCAPE])
+							{
+								MainGame = false;
+								Running = false;
+							}
 							break;
 						}
 						}
@@ -561,6 +529,21 @@ int main(int, char **)
 					{
 						m->SearchForTarget(asteroids);
 						m->SearchForTarget(enemies);
+						if (m->homing == true)
+						{
+							m->testLeftoverCounter++;
+							if (m->testLeftoverCounter % 1 == 0)
+							{
+								Object o(Object::Type::neutral);
+								o.SetPosAndRot(m->posX, m->posY, m->rotation);
+								o.DrawObject = { (int)o.posX,(int)o.posY, 4, 4};
+								m->targetSeekingLeftovers.push_back(o);
+							}
+							if (m->testLeftoverCounter % 10 == 0)
+							{
+								//m->targetSeekingLeftovers.erase(m->targetSeekingLeftovers.begin());
+							}
+						}
 					}
 				}
 
@@ -742,21 +725,21 @@ int main(int, char **)
 						}
 						if (p->spritePosX == 1 && p->spritePosY == 0)
 						{
-							player.doubleShot = true;
+							player.mWeaponType = player.DoubleShot;
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 1), Pickup::pickupn.end());
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 2), Pickup::pickupn.end());
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 3), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 2 && p->spritePosY == 0)
 						{
-							player.tripleShot = true;
+							player.mWeaponType = player.TripleShot;
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 1), Pickup::pickupn.end());
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 2), Pickup::pickupn.end());
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 3), Pickup::pickupn.end());
 						}
 						if (p->spritePosX == 3 && p->spritePosY == 0)
 						{
-							player.quadrupleShot = true;
+							player.mWeaponType = player.QuadrupleShot;
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 1), Pickup::pickupn.end());
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 2), Pickup::pickupn.end());
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 3), Pickup::pickupn.end());
@@ -828,7 +811,7 @@ int main(int, char **)
 							if (player.maxHealth < 7)
 							{
 								player.maxHealth++;
-								Object health;
+								Object health(Object::Type::neutral);
 								health.texture = ResourceDatabase::Textures["pHealthEmpty"];
 								health.DrawObject = { 615 - ((int)player.playerHealth.size() * 25),5,20,40 }; 
 								player.playerHealth.push_back(health);
@@ -974,6 +957,13 @@ int main(int, char **)
 				for (Missile* a : Missile::missiles)
 				{
 					SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["missile"], NULL, &a->DrawObject, a->rotation + 90, NULL, SDL_FLIP_NONE);
+					if (a->targetSeekingLeftovers.size() > 0)
+					{
+						for (Object o : a->targetSeekingLeftovers)
+						{
+							SDL_RenderCopy(Renderer, ResourceDatabase::Textures["TargetSeekingLeftovers"], NULL, &o.DrawObject);
+						}
+					}
 				}
 
 				for (Pickup* p : pickups)

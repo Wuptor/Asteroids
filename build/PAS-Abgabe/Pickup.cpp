@@ -3,7 +3,7 @@
 
 std::vector<int> Pickup::pickupn;
 
-Pickup::Pickup(float _x, float _y, SDL_Texture* _Used) : lifeTime(600) //lifetime static und für alle pickups gleich?
+Pickup::Pickup(float _x, float _y, SDL_Texture* _Used) : lifeTime(600), Object(pickup) //lifetime static und für alle pickups gleich?
 {
 	SDL_QueryTexture(_Used, NULL, NULL, &TextureWidth, &TextureHeight);
 	FrameWidth = TextureWidth / 10;

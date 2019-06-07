@@ -1,5 +1,4 @@
 #pragma once
-#include "Player.h"
 #include "EMissile.h"
 
 class Enemy : public Object //lifecount = 2
@@ -12,7 +11,7 @@ public:
 	int movementCounter, firerateCounter, eType, lifecount, targetID;
 	SDL_Texture* Used, *UsedShield, *Damaged;
 	SDL_Rect DrawShield;
-	void update(Player P);
+	void update(Object P);
 	void SpawnPlayerTargetAlien(SDL_Texture* _used, SDL_Texture* _useds, SDL_Texture* _damaged);
 	void SpawnRapidFireAlien(SDL_Texture* _used, SDL_Texture* _useds, SDL_Texture* _damaged);
 	void SpawnRapidRandomShotAlien(SDL_Texture* _used, SDL_Texture* _useds, SDL_Texture* _damaged);

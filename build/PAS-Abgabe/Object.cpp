@@ -2,8 +2,9 @@
 #include "Object.h"
 
 int Object::ObjectID = 1; //object id usw fixen
+std::vector<Object>* Object::Entities;
 
-Object::Object() : ID(ObjectID), alive(true), posX(0), posY(0), width(0), height(0), rotation(0), radius(0)
+Object::Object(Type _type) : ID(ObjectID), alive(true), posX(0), posY(0), width(0), height(0), rotation(0), radius(0), mObjectType(_type)
 {
 	ObjectID++;
 }
@@ -39,4 +40,16 @@ bool Object::CheckCollision(Object* _other)
 		return true;
 	}
 	return false;
+}
+
+void Object::update() //evtl in dem base update auchw as ausführen
+{
+
+}
+
+void Object::SetPosAndRot(int _posX, int _posY, int _rotation)
+{
+	posX = _posX;
+	posY = _posY;
+	rotation = _rotation;
 }
