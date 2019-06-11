@@ -1,6 +1,8 @@
 #pragma once
 #include <SDL.h>
 #include <vector>
+#include <deque>
+
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480

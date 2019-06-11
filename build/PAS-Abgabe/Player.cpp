@@ -7,7 +7,7 @@ shieldActieTime(0), maxHealth(3), maxFireRate(5),
 thrust(false), splitShot(false), megaShot(false), targetSeeking(true), shieldBreak(false),
 playerShield(false), shieldActice(false), hitByEnemy(false), Object(player)
 {
-	mWeaponType = Normal;
+	mWeaponType = QuadrupleShot;
 	radius = 15;
 	posX = 200;
 	posY = 100;

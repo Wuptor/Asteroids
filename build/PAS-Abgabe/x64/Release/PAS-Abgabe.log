@@ -1,18 +1,16 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
-  PAS-Abgabe.cpp
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(55): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(56): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(129): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(130): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(134): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(142): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(153): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(157): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(178): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\pas-abgabe.cpp(538): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+﻿D:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  Missile.cpp
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(15): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(30): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(43): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(47): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(48): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(59): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(180): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   Generating code
-  0 of 1065 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  2 of 1161 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  PAS-Abgabe.vcxproj -> C:\Users\phglas\Documents\Repos\Asteroids\build\PAS-Abgabe\..\exe\x64\Release\PAS-Abgabe.exe
+  PAS-Abgabe.vcxproj -> D:\phili\Documents\repo\Asteroids\build\PAS-Abgabe\..\exe\x64\Release\PAS-Abgabe.exe

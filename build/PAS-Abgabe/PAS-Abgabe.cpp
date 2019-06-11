@@ -32,6 +32,7 @@
 //links lenken und schießen geht wegen ghosting nicht --> evlt versuchen zu tricksen oder alternative tastaturbelegung erlauben#
 //file read and write
 //überlegen ob/wie es sinn macht alle objects über eine list zu verwalten
+//bei aktivem shield den kollission radius größer machen
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -503,6 +504,7 @@ int main(int, char **)
 						{
 							MainGame = false;
 							Running = false;
+							pause = false;
 							break;
 						}
 						case SDL_KEYDOWN:
@@ -516,6 +518,7 @@ int main(int, char **)
 							{
 								MainGame = false;
 								Running = false;
+								pause = false;
 							}
 							break;
 						}
@@ -529,19 +532,19 @@ int main(int, char **)
 					{
 						m->SearchForTarget(asteroids);
 						m->SearchForTarget(enemies);
-						if (m->homing == true)
+						if (m->homing == true) //da funktioniert nochwas nicht so ganz
 						{
 							m->testLeftoverCounter++;
 							if (m->testLeftoverCounter % 1 == 0)
 							{
-								Object o(Object::Type::neutral);
-								o.SetPosAndRot(m->posX, m->posY, m->rotation);
-								o.DrawObject = { (int)o.posX,(int)o.posY, 4, 4};
-								m->targetSeekingLeftovers.push_back(o);
+								Object* o = new Object(Object::Type::neutral);
+								o->SetPosAndRot(m->posX, m->posY, m->rotation);
+								o->DrawObject = { (int)o->posX,(int)o->posY, 4, 4};
+								m->targetSeekingLeftovers.push_back(*o); //evtl könnte hier ein fehler entstehen
 							}
-							if (m->testLeftoverCounter % 10 == 0)
+							if (m->targetSeekingLeftovers.size() > 30) //-->evlt alte linien ausgrauen? und dann verschwinden
 							{
-								//m->targetSeekingLeftovers.erase(m->targetSeekingLeftovers.begin());
+								m->targetSeekingLeftovers.pop_front();
 							}
 						}
 					}
@@ -839,7 +842,8 @@ int main(int, char **)
 					}
 				}
 
-				for (Missile *m : Missile::missiles)
+				/*
+				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
 				{
 					if (m->homing == true && m->enemyID != 0)
 					{
@@ -857,6 +861,27 @@ int main(int, char **)
 						}
 					}
 				}
+				*/
+
+				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
+				{
+					if (m->homing == true && m->enemyID != 0)
+					{
+						for (int i = 0; i < asteroids.size(); i++)
+						{
+							if (asteroids.at(i)->ID == m->enemyID)
+							{
+								m->eposX = asteroids.at(i)->posX;
+								m->eposY = asteroids.at(i)->posY;
+								if (asteroids.at(i)->alive == false)
+								{
+									m->enemyID = 0;
+								}
+							}
+						}
+					}
+				}
+
 				for (Missile *m : Missile::missiles)
 				{
 					if (m->homing == true && m->enemyID != 0)
@@ -875,6 +900,7 @@ int main(int, char **)
 						}
 					}
 				}
+				/*
 				for (Asteroid *a : asteroids)
 				{
 					for (int i = 0; i < Missile::missiles.size(); i++)
@@ -888,7 +914,22 @@ int main(int, char **)
 						}
 					}
 				}
-
+				*/
+				/*
+				for (Asteroid *a : asteroids)
+				{
+					for (int i = 0; i < Missile::missiles.size(); i++)
+					{
+						if (Missile::missiles.at(i)->ID == a->targetID) //falls diese id in target ids drinn ist
+						{
+							if (Missile::missiles.at(i)->alive == false)
+							{
+								a->targetID = 0; //aus der liste den wert entfernen
+							}
+						}
+					}
+				}
+				*/
 				for (Enemy *e : enemies)
 				{
 					for (int i = 0; i < Missile::missiles.size(); i++)
@@ -956,7 +997,6 @@ int main(int, char **)
 
 				for (Missile* a : Missile::missiles)
 				{
-					SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["missile"], NULL, &a->DrawObject, a->rotation + 90, NULL, SDL_FLIP_NONE);
 					if (a->targetSeekingLeftovers.size() > 0)
 					{
 						for (Object o : a->targetSeekingLeftovers)
@@ -964,6 +1004,7 @@ int main(int, char **)
 							SDL_RenderCopy(Renderer, ResourceDatabase::Textures["TargetSeekingLeftovers"], NULL, &o.DrawObject);
 						}
 					}
+					SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["missile"], NULL, &a->DrawObject, a->rotation + 90, NULL, SDL_FLIP_NONE);
 				}
 
 				for (Pickup* p : pickups)
