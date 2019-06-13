@@ -21,4 +21,5 @@ public:
 	void SearchForTarget(std::vector<Enemy*> list);
 	bool CheckAsteroids(std::vector<Asteroid*> list);
 	int BiggestTargetList(std::vector<Asteroid*> list);
+	int SmallestTargetList(std::vector<Asteroid*> list);
 };

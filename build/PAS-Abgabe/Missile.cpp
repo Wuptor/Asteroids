@@ -18,6 +18,7 @@ Missile::Missile(float X, float Y, int ROTATION) : Object(missile)
 	homing = true;  //homing ist irgendwie sinnlos
 	enemyID = 0;
 	testLeftoverCounter = 0;
+	SearchForTarget(Asteroid::asteroids); //WIP
 }
 
 Missile::~Missile()
@@ -68,7 +69,7 @@ void Missile::TriggerSplitshot()
 	}
 }
 
-/*
+
 void Missile::SearchForTarget(std::vector<Asteroid*> list)
 {
 	if (enemyID == 0)
@@ -95,10 +96,11 @@ void Missile::SearchForTarget(std::vector<Asteroid*> list)
 		}
 	}
 }
-*/
 
-void Missile::SearchForTarget(std::vector<Asteroid*> list) //fehler wenn liste size == 0 und alle verfolgen das nächste ziel
+/*
+void Missile::SearchForTarget(std::vector<Asteroid*> list) //fehler wenn liste size == 0 und alle verfolgen das nächste ziel //missiles evtl retargeten
 {
+	std::cout << "MISSILE SEARCHING FOR TARGET" << "\n";
 	if (list.size() == 0)
 	{
 		return;
@@ -113,6 +115,7 @@ void Missile::SearchForTarget(std::vector<Asteroid*> list) //fehler wenn liste s
 			std::cout << "Checkpoint 1" << "\n";
 			for (int i = 0; i < list.size(); i++)
 			{
+				std::cout << "im currently followed by: "<< (int)list.at(i)->targedIDS.size() << " Asteroids" << "\n";
 				list.at(i)->distance = sqrt(pow(posX - list.at(i)->posX, 2) + pow(posY - list.at(i)->posY, 2));
 				if (list.at(i)->distance <= distance)
 				{
@@ -125,11 +128,11 @@ void Missile::SearchForTarget(std::vector<Asteroid*> list) //fehler wenn liste s
 		else
 		{
 			std::cout << "Checkpoint 2" << "\n";
-			int ListSize = BiggestTargetList(list);
+			int ListSize = SmallestTargetList(list);
 			std::cout << "Listsize ist : " << ListSize << "\n";
 			for (int i = 0; i < list.size(); i++)
 			{
-				if (list.at(i)->targedIDS.size() < ListSize)
+				if (list.at(i)->targedIDS.size() == ListSize)
 				{
 					list.at(i)->distance = sqrt(pow(posX - list.at(i)->posX, 2) + pow(posY - list.at(i)->posY, 2));
 					if (list.at(i)->distance <= distance)
@@ -149,13 +152,13 @@ void Missile::SearchForTarget(std::vector<Asteroid*> list) //fehler wenn liste s
 		}
 	}
 }
-
+*/
 bool Missile::CheckAsteroids(std::vector<Asteroid*> list)
 {
 	bool test = false;
 	for (int i = 0; i < list.size()-1; i++)
 	{
-		if (list.at(i)->targedIDS.size() == list.at(i + 1)->targedIDS.size())
+		if ((int)list.at(i)->targedIDS.size() == (int)list.at(i + 1)->targedIDS.size())
 		{
 			test = true;
 			//std::cout << "hier" << "\n";
@@ -163,10 +166,25 @@ bool Missile::CheckAsteroids(std::vector<Asteroid*> list)
 		else
 		{
 			test = false;
+			return test;
 			//std::cout << "test" << "\n";
 		}
 	}
 	return test;
+}
+
+int Missile::SmallestTargetList(std::vector<Asteroid*> list)
+{
+	int smallestSize = INT_MAX;
+	for (int i = 0; i < list.size(); i++)
+	{
+		std::cout << "list size: " << list.at(i)->targedIDS.size() << "\n";
+		if ((int)list.at(i)->targedIDS.size() < smallestSize)
+		{
+			smallestSize = (int)list.at(i)->targedIDS.size();
+		}
+	}
+	return smallestSize;
 }
 
 int Missile::BiggestTargetList(std::vector<Asteroid*> list)
@@ -177,7 +195,7 @@ int Missile::BiggestTargetList(std::vector<Asteroid*> list)
 		std::cout << "list size: " << list.at(i)->targedIDS.size() << "\n";
 		if ((int)list.at(i)->targedIDS.size() > biggestSize)
 		{
-			biggestSize = list.at(i)->targedIDS.size();
+			biggestSize = (int)list.at(i)->targedIDS.size();
   			std::cout << "test" << "\n";
 		}
 	}

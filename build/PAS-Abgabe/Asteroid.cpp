@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Asteroid.h"
 
+std::vector<Asteroid*> Asteroid::asteroids;
 
 Asteroid::Asteroid(float _x, float _y, int _wah, SDL_Texture* used) : asteroidsInside(2 + rand() % 3), Object(asteroid)
 {

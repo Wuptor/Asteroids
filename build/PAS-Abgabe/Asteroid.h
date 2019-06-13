@@ -5,6 +5,7 @@
 class Asteroid : public Object
 {
 public:
+	static std::vector<Asteroid*> asteroids;
 	Asteroid(float _x, float _y, int _wah, SDL_Texture* used);
 	~Asteroid();
 	float distance;

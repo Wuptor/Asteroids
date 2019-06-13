@@ -33,6 +33,10 @@
 //file read and write
 //überlegen ob/wie es sinn macht alle objects über eine list zu verwalten
 //bei aktivem shield den kollission radius größer machen
+//pseudo code: 1.wird jeder asteroid bereits verfolgt? -> wenn nein dann den nächsten noch nicht verfolgten asteroiden verfolgen 2. wenn alle asteroiden bereits verfolgt werden: verfolge von allen asteroiden mit die am wenigsten verfolgt werden den nächsten
+//vllt einfach: wenn eine missile gespawnt wird: checken: gibt es noch nicht verfolgte asteroiden, wenn ja den nächsten verfolgen, wenn nein denn nächsten mit den wenigsten verfolgenden missiles verfolgen, aber nie wieder ein neues ziel suchen (wenn list == empty dann gerade aus)
+//vllt fürs visuelle --> 1. es gibt ein max anzahl an verfolgenden missiles pro gegner/asteroid , 2. alle missiles haben einen leicht unterschiedlichen turningspeed
+//neues targeting ist sehr slow --> n² evtl nochmal überarbeiten --> trotzdem neues system verwenden
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -44,7 +48,6 @@ int enemynumber = 1;
 bool pause;
 int temporaryScore = 0;
 
-std::vector<Asteroid*> asteroids;
 std::vector<Pickup*> pickups;
 std::vector<Enemy*> enemies;
 
@@ -178,7 +181,7 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 			*/
 			a->anim->updatePos(a->posX, a->posY, a->rotation);
 			Animation::animations.push_back(a->anim);
-			asteroids.push_back(a);
+			Asteroid::asteroids.push_back(a);
 		}
 	}
 	else //für die kleinen asteroids oder?
@@ -196,7 +199,7 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 			}
 			Asteroid *a = new Asteroid(_posX, _posY, _wah, UsedAnim);
 			Animation::animations.push_back(a->anim);
-			asteroids.push_back(a);
+			Asteroid::asteroids.push_back(a);
 		}
 	}
 }
@@ -365,7 +368,7 @@ int main(int, char **)
 		}
 		if (PreGame) //resets all values
 		{
-			asteroids.clear();
+			Asteroid::asteroids.clear();
 			Missile::missiles.clear();
 			enemies.clear();
 			pickups.clear();
@@ -404,7 +407,7 @@ int main(int, char **)
 				{
 					m->update();
 				}
-				for (Asteroid* c : asteroids)
+				for (Asteroid* c : Asteroid::asteroids)
 				{
 					c->update();
 				}
@@ -530,8 +533,8 @@ int main(int, char **)
 				{
 					for (Missile* m : Missile::missiles)
 					{
-						m->SearchForTarget(asteroids);
-						m->SearchForTarget(enemies);
+						//m->SearchForTarget(asteroids);
+						//m->SearchForTarget(enemies);
 						if (m->homing == true) //da funktioniert nochwas nicht so ganz
 						{
 							m->testLeftoverCounter++;
@@ -552,27 +555,27 @@ int main(int, char **)
 
 				for (int i = 0; i < Missile::missiles.size(); i++)
 				{
-					for (int j = 0; j < asteroids.size(); j++)
+					for (int j = 0; j < Asteroid::asteroids.size(); j++)
 					{
-						if (Missile::missiles.at(i)->alive == true && asteroids.at(j)->alive == true)
+						if (Missile::missiles.at(i)->alive == true && Asteroid::asteroids.at(j)->alive == true)
 						{
-							if (Missile::missiles.at(i)->CheckCollision(asteroids.at(j)))
+							if (Missile::missiles.at(i)->CheckCollision(Asteroid::asteroids.at(j)))
 							{
 								Missile::missiles.at(i)->alive = false;
-								asteroids.at(j)->alive = false;
+								Asteroid::asteroids.at(j)->alive = false;
 								score += 10;
 								temporaryScore += 10;
-								asteroids.at(j)->anim->playing = false;
-								Animation* a = new Animation((int)asteroids.at(j)->posX - ((asteroids.at(j)->width + 30) / 2), (int)asteroids.at(j)->posY - ((asteroids.at(j)->width + 30) / 2), asteroids.at(j)->width + 30, asteroids.at(j)->height + 30, ResourceDatabase::Textures["AsteroidDestruction"], 4, 1, 0, 5);
+								Asteroid::asteroids.at(j)->anim->playing = false;
+								Animation* a = new Animation((int)Asteroid::asteroids.at(j)->posX - ((Asteroid::asteroids.at(j)->width + 30) / 2), (int)Asteroid::asteroids.at(j)->posY - ((Asteroid::asteroids.at(j)->width + 30) / 2), Asteroid::asteroids.at(j)->width + 30, Asteroid::asteroids.at(j)->height + 30, ResourceDatabase::Textures["AsteroidDestruction"], 4, 1, 0, 5);
 								Animation::animations.push_back(a);
 
 								if (player.splitShot == true)
 								{
 									Missile::missiles.at(i)->TriggerSplitshot();
 								}
-								SpawnPickup(asteroids.at(j)->posX, asteroids.at(j)->posY, ResourceDatabase::Textures["Pickups"]);
-								if (asteroids.at(j)->width > 40 && player.megaShot == false) {
-									SpawnAsteroids(player, asteroids.at(j)->asteroidsInside, asteroids.at(j)->posX, asteroids.at(j)->posY, 30, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
+								SpawnPickup(Asteroid::asteroids.at(j)->posX, Asteroid::asteroids.at(j)->posY, ResourceDatabase::Textures["Pickups"]);
+								if (Asteroid::asteroids.at(j)->width > 40 && player.megaShot == false) {
+									SpawnAsteroids(player, Asteroid::asteroids.at(j)->asteroidsInside, Asteroid::asteroids.at(j)->posX, Asteroid::asteroids.at(j)->posY, 30, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
 								}
 							}
 						}
@@ -634,7 +637,7 @@ int main(int, char **)
 
 				if (player.alive == true)
 				{
-					for (Asteroid *a : asteroids)
+					for (Asteroid *a : Asteroid::asteroids)
 					{
 						if (a->CheckCollision(&player))
 						{
@@ -649,7 +652,7 @@ int main(int, char **)
 							{
 								player.hitByEnemy = true;
 							}
-							TriggerKillRadius(asteroids, player, 150);
+							TriggerKillRadius(Asteroid::asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
 							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
@@ -670,7 +673,7 @@ int main(int, char **)
 							{
 								player.hitByEnemy = true;
 							}
-							TriggerKillRadius(asteroids, player, 150);
+							TriggerKillRadius(Asteroid::asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
 							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
@@ -690,7 +693,7 @@ int main(int, char **)
 							{
 								player.hitByEnemy = true;
 							}
-							TriggerKillRadius(asteroids, player, 150);
+							TriggerKillRadius(Asteroid::asteroids, player, 150);
 							TriggerKillRadius(enemies, player, 150);
 							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
@@ -761,7 +764,7 @@ int main(int, char **)
 						}
 						if (p->spritePosX == 6 && p->spritePosY == 0)
 						{
-							TriggerKillRadius(asteroids, player, 500);
+							TriggerKillRadius(Asteroid::asteroids, player, 500);
 							TriggerKillRadius(enemies, player, 500);
 							TriggerKillRadius(EMissile::eMissiles, player, 500);
 							Animation* a = new Animation((int)player.posX - 250, (int)player.posY - 250, 500, 500, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
@@ -842,18 +845,38 @@ int main(int, char **)
 					}
 				}
 
+				
+				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
+				{
+					if (m->homing == true && m->enemyID != 0)
+					{
+						for (int i = 0; i < Asteroid::asteroids.size(); i++)
+						{
+							if (Asteroid::asteroids.at(i)->ID == m->enemyID)
+							{
+								m->eposX = Asteroid::asteroids.at(i)->posX;
+								m->eposY = Asteroid::asteroids.at(i)->posY;
+								if (Asteroid::asteroids.at(i)->alive == false)
+								{
+									m->enemyID = 0;
+								}
+							}
+						}
+					}
+				}
+				
 				/*
 				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
 				{
 					if (m->homing == true && m->enemyID != 0)
 					{
-						for (int i = 0; i < asteroids.size(); i++)
+						for (int i = 0; i < Asteroid::asteroids.size(); i++)
 						{
-							if (asteroids.at(i)->ID == m->enemyID)
+							if (Asteroid::asteroids.at(i)->ID == m->enemyID)
 							{
-								m->eposX = asteroids.at(i)->posX;
-								m->eposY = asteroids.at(i)->posY;
-								if (asteroids.at(i)->alive == false)
+								m->eposX = Asteroid::asteroids.at(i)->posX;
+								m->eposY = Asteroid::asteroids.at(i)->posY;
+								if (Asteroid::asteroids.at(i)->alive == false)
 								{
 									m->enemyID = 0;
 								}
@@ -862,26 +885,6 @@ int main(int, char **)
 					}
 				}
 				*/
-
-				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
-				{
-					if (m->homing == true && m->enemyID != 0)
-					{
-						for (int i = 0; i < asteroids.size(); i++)
-						{
-							if (asteroids.at(i)->ID == m->enemyID)
-							{
-								m->eposX = asteroids.at(i)->posX;
-								m->eposY = asteroids.at(i)->posY;
-								if (asteroids.at(i)->alive == false)
-								{
-									m->enemyID = 0;
-								}
-							}
-						}
-					}
-				}
-
 				for (Missile *m : Missile::missiles)
 				{
 					if (m->homing == true && m->enemyID != 0)
@@ -900,8 +903,8 @@ int main(int, char **)
 						}
 					}
 				}
-				/*
-				for (Asteroid *a : asteroids)
+				
+				for (Asteroid *a : Asteroid::asteroids)
 				{
 					for (int i = 0; i < Missile::missiles.size(); i++)
 					{
@@ -914,7 +917,7 @@ int main(int, char **)
 						}
 					}
 				}
-				*/
+				
 				/*
 				for (Asteroid *a : asteroids)
 				{
@@ -943,11 +946,11 @@ int main(int, char **)
 						}
 					}
 				}
-				for (std::vector<Asteroid*>::iterator itr = asteroids.begin(); itr != asteroids.end(); )
+				for (std::vector<Asteroid*>::iterator itr = Asteroid::asteroids.begin(); itr != Asteroid::asteroids.end(); )
 				{
 					if ((*itr)->alive == false)
 					{
-						itr = asteroids.erase(itr);
+						itr = Asteroid::asteroids.erase(itr);
 					}
 					else
 						++itr;
