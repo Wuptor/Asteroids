@@ -21,5 +21,6 @@ public:
 	void EnemyMovementPattern3();
 	void EnemyMovementPattern4(Object P);
 	void EnemyMovementPattern5();
+	static std::vector<Enemy*> enemies;
 };
 

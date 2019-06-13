@@ -3,7 +3,7 @@
 
 std::vector<Missile*> Missile::missiles;
 
-Missile::Missile(float X, float Y, int ROTATION) : Object(missile)
+Missile::Missile(float X, float Y, int ROTATION, bool targetSeeking) : Object(missile)
 {
 	if (X == NULL || Y == NULL) //warum?
 	{
@@ -15,10 +15,17 @@ Missile::Missile(float X, float Y, int ROTATION) : Object(missile)
 	rotation = ROTATION;
 	radius = 15;
 	alreadysplit = false;
-	homing = true;  //homing ist irgendwie sinnlos
+	homing = true;  //homing ist irgendwie sinnlos //was macht homing? //macht irgendwie nichts
 	enemyID = 0;
 	testLeftoverCounter = 0;
-	SearchForTarget(Asteroid::asteroids); //WIP
+	if (targetSeeking)
+	{
+		SearchForTarget(Enemy::enemies); //target seeking geht irgendwie noch nicht
+		if (enemyID == 0)
+		{
+			SearchForTarget(Asteroid::asteroids); //WIP --> vllt liste durch in ersetzen //nur homing missiles leftovers --> funktioniert nicht mit splitshot
+		}
+	}
 }
 
 Missile::~Missile()
@@ -50,14 +57,14 @@ void Missile::update() {
 	DeleteOnScreenExit();
 }
 
-void Missile::TriggerSplitshot()
+void Missile::TriggerSplitshot(bool targetSeeking) //leftover fehler weil getroffene asteroiden erst später gelöscht werden
 {
 	if (alreadysplit == false)
 	{
 		int ra = (int)rand() % 4 + 4; //splitcount noch woanders hinpacken //P.splitCount
 		for (int i = 0; i < ra; i++)
 		{
-			Missile *m1 = new Missile((int)posX, (int)posY, rand() % 360);
+			Missile *m1 = new Missile((int)posX, (int)posY, rand() % 360, targetSeeking);
 			m1->alreadysplit = true;
 			Missile::missiles.push_back(m1);
 			/*
@@ -104,6 +111,7 @@ void Missile::SearchForTarget(std::vector<Asteroid*> list) //fehler wenn liste s
 	//std::cout << "MISSILE SEARCHING FOR TARGET" << "\n";
 	if (list.size() == 0)
 	{
+		homing = false;
 		return;
 	}
 	if (enemyID == 0)
@@ -206,6 +214,11 @@ int Missile::BiggestTargetList(std::vector<Asteroid*> list)
 
 void Missile::SearchForTarget(std::vector<Enemy*> list)
 {
+	if (list.size() == 0)
+	{
+		homing = false;
+		return;
+	}
 	if (enemyID == 0)
 	{
 		int index = -1;

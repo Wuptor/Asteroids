@@ -50,7 +50,7 @@ bool pause;
 int temporaryScore = 0;
 
 std::vector<Pickup*> pickups;
-std::vector<Enemy*> enemies;
+//std::vector<Enemy*> enemies;
 
 bool CheckCollisionHCircle(Object* one, Object *second) //auch in object was ist one und was ist second?
 {
@@ -371,7 +371,7 @@ int main(int, char **)
 		{
 			Asteroid::asteroids.clear();
 			Missile::missiles.clear();
-			enemies.clear();
+			Enemy::enemies.clear();
 			pickups.clear();
 			EMissile::eMissiles.clear();
 			Animation::animations.clear();
@@ -412,7 +412,7 @@ int main(int, char **)
 				{
 					c->update();
 				}
-				for (Enemy* e : enemies)
+				for (Enemy* e : Enemy::enemies)
 				{
 					e->update(player);
 				}
@@ -444,7 +444,7 @@ int main(int, char **)
 						enemynumber++;
 					}
 				}
-				if (enemies.size() < enemynumber) {
+				if (Enemy::enemies.size() < enemynumber) {
 					if (rand() % 50 == 0)
 					{
 						int EnemyType = rand() % 5;
@@ -460,7 +460,7 @@ int main(int, char **)
 						if (EnemyType == 4)
 							e->SpawnHalfCircleShotAlien(ResourceDatabase::Textures["enemy5"], ResourceDatabase::Textures["enemyShield"], ResourceDatabase::Textures["damagedEnemy5"]); //enemy that fires in a half circle
 
-						enemies.push_back(e);
+						Enemy::enemies.push_back(e);
 					}
 				}
 
@@ -572,7 +572,7 @@ int main(int, char **)
 
 								if (player.splitShot == true)
 								{
-									Missile::missiles.at(i)->TriggerSplitshot();
+									Missile::missiles.at(i)->TriggerSplitshot(player.targetSeeking);
 								}
 								SpawnPickup(Asteroid::asteroids.at(j)->posX, Asteroid::asteroids.at(j)->posY, ResourceDatabase::Textures["Pickups"]);
 								if (Asteroid::asteroids.at(j)->width > 40 && player.megaShot == false) {
@@ -584,7 +584,7 @@ int main(int, char **)
 				}
 				for (int i = 0; i < Missile::missiles.size(); i++)
 				{
-					for (Enemy* e : enemies)
+					for (Enemy* e : Enemy::enemies)
 					{
 						if (Missile::missiles.at(i)->alive == true && e->alive == true)
 						{
@@ -605,7 +605,7 @@ int main(int, char **)
 											Animation::animations.push_back(a);
 											if (player.splitShot == true)
 											{
-												Missile::missiles.at(i)->TriggerSplitshot();
+												Missile::missiles.at(i)->TriggerSplitshot(player.targetSeeking);
 											}
 										}
 									}
@@ -624,7 +624,7 @@ int main(int, char **)
 											Animation::animations.push_back(a);
 											if (player.splitShot == true)
 											{
-												Missile::missiles.at(i)->TriggerSplitshot();
+												Missile::missiles.at(i)->TriggerSplitshot(player.targetSeeking);
 											}
 											SpawnPickup(e->posX, e->posY, ResourceDatabase::Textures["Pickups"]);
 										}
@@ -654,13 +654,13 @@ int main(int, char **)
 								player.hitByEnemy = true;
 							}
 							TriggerKillRadius(Asteroid::asteroids, player, 150);
-							TriggerKillRadius(enemies, player, 150);
+							TriggerKillRadius(Enemy::enemies, player, 150);
 							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
 					}
 
 
-					for (Enemy *e : enemies)
+					for (Enemy *e : Enemy::enemies)
 					{
 						if (e->CheckCollision(&player))
 						{
@@ -675,7 +675,7 @@ int main(int, char **)
 								player.hitByEnemy = true;
 							}
 							TriggerKillRadius(Asteroid::asteroids, player, 150);
-							TriggerKillRadius(enemies, player, 150);
+							TriggerKillRadius(Enemy::enemies, player, 150);
 							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
 					}
@@ -695,7 +695,7 @@ int main(int, char **)
 								player.hitByEnemy = true;
 							}
 							TriggerKillRadius(Asteroid::asteroids, player, 150);
-							TriggerKillRadius(enemies, player, 150);
+							TriggerKillRadius(Enemy::enemies, player, 150);
 							TriggerKillRadius(EMissile::eMissiles, player, 150);
 						}
 					}
@@ -766,7 +766,7 @@ int main(int, char **)
 						if (p->spritePosX == 6 && p->spritePosY == 0)
 						{
 							TriggerKillRadius(Asteroid::asteroids, player, 500);
-							TriggerKillRadius(enemies, player, 500);
+							TriggerKillRadius(Enemy::enemies, player, 500);
 							TriggerKillRadius(EMissile::eMissiles, player, 500);
 							Animation* a = new Animation((int)player.posX - 250, (int)player.posY - 250, 500, 500, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
 							Animation::animations.push_back(a);
@@ -963,8 +963,22 @@ int main(int, char **)
 						}
 					}
 				}
-				
-				for (Enemy *e : enemies)
+				/*
+				for (Asteroid *a : Asteroid::asteroids) //wahrscheinlich besser
+				{
+					for (Missile *m : Missile::missiles)
+					{
+						if (m->alive == false && m->enemyID == a->ID)
+						{
+							if ((int)a->targedIDS.size() > 0)
+							{
+								a->targedIDS.pop_back();
+							}
+						}
+					}
+				}
+				*/
+				for (Enemy *e : Enemy::enemies)
 				{
 					for (int i = 0; i < Missile::missiles.size(); i++)
 					{
@@ -1003,10 +1017,10 @@ int main(int, char **)
 						++itr;
 				}
 
-				for (std::vector<Enemy*>::iterator itr = enemies.begin(); itr != enemies.end(); )
+				for (std::vector<Enemy*>::iterator itr = Enemy::enemies.begin(); itr != Enemy::enemies.end(); )
 				{
 					if ((*itr)->alive == false)
-						itr = enemies.erase(itr);
+						itr = Enemy::enemies.erase(itr);
 					else
 						++itr;
 				}
@@ -1055,7 +1069,7 @@ int main(int, char **)
 				{
 					SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["eMissile"], NULL, &em->DrawObject, em->rotation, NULL, SDL_FLIP_NONE);
 				}
-				for (Enemy* e : enemies)
+				for (Enemy* e : Enemy::enemies)
 				{
 					SDL_RenderCopyEx(Renderer, e->Used, NULL, &e->DrawObject, e->rotation + 90, NULL, SDL_FLIP_NONE);
 					if (e->shielded == true)

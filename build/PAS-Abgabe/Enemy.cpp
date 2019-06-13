@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Enemy.h"
 
+std::vector<Enemy*> Enemy::enemies;
 
 Enemy::Enemy(int EnemyType) : targetID(0), lifecount(2), startCalculations(true), startrot(0), endrot(0), movedirecx(0), movedirecy(0), distToEnd(0), distToSource(0), firstTurn(true), moving(false),
 edirx(0), ediry(0), dist(0), espeed(0), ehyp(0), movementCounter(0), firerateCounter(0), shielded(false), rotating(true), turning(true), randomSpawnPos(0), angleCopy(0), randomRotation(0),
