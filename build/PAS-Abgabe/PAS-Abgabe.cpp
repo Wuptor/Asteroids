@@ -37,6 +37,7 @@
 //vllt einfach: wenn eine missile gespawnt wird: checken: gibt es noch nicht verfolgte asteroiden, wenn ja den nächsten verfolgen, wenn nein denn nächsten mit den wenigsten verfolgenden missiles verfolgen, aber nie wieder ein neues ziel suchen (wenn list == empty dann gerade aus)
 //vllt fürs visuelle --> 1. es gibt ein max anzahl an verfolgenden missiles pro gegner/asteroid , 2. alle missiles haben einen leicht unterschiedlichen turningspeed
 //neues targeting ist sehr slow --> n² evtl nochmal überarbeiten --> trotzdem neues system verwenden
+//maybe ein find id oder so einbauen
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -137,7 +138,7 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 			{
 				a->posX = -a->width;
 			}
-			else if(a->fx < 0 && a->fy == 0)
+			else if (a->fx < 0 && a->fy == 0)
 			{
 				a->posX = SCREEN_WIDTH; //müsste eigentlich keinen unterschied machen
 			}
@@ -145,7 +146,7 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 			{
 				a->posY = -a->width;
 			}
-			else if(a->fy < 0 && a->fx == 0)
+			else if (a->fy < 0 && a->fx == 0)
 			{
 				a->posY = SCREEN_HEIGHT;
 			}
@@ -393,7 +394,7 @@ int main(int, char **)
 			while (MainGame)
 			{
 				player.update();
-				/* 
+				/*
 				for (int i = 0; i < Object::Entities->size(); i++)
 				{
 					Object::Entities->at(i).update();
@@ -419,7 +420,7 @@ int main(int, char **)
 				{
 					y->update();
 				}
-				
+
 
 				if (rand() % 150 == 0)
 				{
@@ -428,7 +429,7 @@ int main(int, char **)
 				if (asteroidSpawnCounter > 1)
 				{
 					asteroidspawnTime++;
-					if (asteroidspawnTime > (15-enemynumber))
+					if (asteroidspawnTime > (15 - enemynumber))
 					{
 						SpawnAsteroids(player, 1, NULL, NULL, 75, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
 						asteroidSpawnCounter--;
@@ -495,7 +496,7 @@ int main(int, char **)
 					}
 					}
 				}
-			
+
 				while (pause) //funktioniert noch nicht ganz optimal
 				{
 					SDL_Event Event;
@@ -542,7 +543,7 @@ int main(int, char **)
 							{
 								Object* o = new Object(Object::Type::neutral);
 								o->SetPosAndRot(m->posX, m->posY, m->rotation);
-								o->DrawObject = { (int)o->posX,(int)o->posY, 4, 4};
+								o->DrawObject = { (int)o->posX,(int)o->posY, 4, 4 };
 								m->targetSeekingLeftovers.push_back(*o); //evtl könnte hier ein fehler entstehen
 							}
 							if (m->targetSeekingLeftovers.size() > 30) //-->evlt alte linien ausgrauen? und dann verschwinden
@@ -701,7 +702,7 @@ int main(int, char **)
 
 				}
 
-				
+
 				if (player.hitByEnemy)
 				{
 					player.hitByEnemy = false;
@@ -715,7 +716,7 @@ int main(int, char **)
 						Animation::animations.push_back(t);
 					}
 				}
-				
+
 				for (Pickup *p : pickups)
 				{
 					p->Update();
@@ -819,7 +820,7 @@ int main(int, char **)
 								player.maxHealth++;
 								Object health(Object::Type::neutral);
 								health.texture = ResourceDatabase::Textures["pHealthEmpty"];
-								health.DrawObject = { 615 - ((int)player.playerHealth.size() * 25),5,20,40 }; 
+								health.DrawObject = { 615 - ((int)player.playerHealth.size() * 25),5,20,40 };
 								player.playerHealth.push_back(health);
 							}
 							if (player.lifeCount < player.maxHealth)
@@ -845,7 +846,7 @@ int main(int, char **)
 					}
 				}
 
-				
+
 				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
 				{
 					if (m->homing == true && m->enemyID != 0)
@@ -864,27 +865,28 @@ int main(int, char **)
 						}
 					}
 				}
-				
+
+
+				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
+				{
+					if (m->homing == true && m->enemyID != 0)
+					{
+						for (int i = 0; i < Asteroid::asteroids.size(); i++)
+						{
+							if (Asteroid::asteroids.at(i)->ID == m->enemyID)
+							{
+								m->eposX = Asteroid::asteroids.at(i)->posX;
+								m->eposY = Asteroid::asteroids.at(i)->posY;
+								if (Asteroid::asteroids.at(i)->alive == false)
+								{
+									m->enemyID = 0;
+								}
+							}
+						}
+					}
+				}
+
 				/*
-				for (Missile *m : Missile::missiles) //muss auch noch wegen neuem homing überarbeitet werden
-				{
-					if (m->homing == true && m->enemyID != 0)
-					{
-						for (int i = 0; i < Asteroid::asteroids.size(); i++)
-						{
-							if (Asteroid::asteroids.at(i)->ID == m->enemyID)
-							{
-								m->eposX = Asteroid::asteroids.at(i)->posX;
-								m->eposY = Asteroid::asteroids.at(i)->posY;
-								if (Asteroid::asteroids.at(i)->alive == false)
-								{
-									m->enemyID = 0;
-								}
-							}
-						}
-					}
-				}
-				*/
 				for (Missile *m : Missile::missiles)
 				{
 					if (m->homing == true && m->enemyID != 0)
@@ -903,7 +905,8 @@ int main(int, char **)
 						}
 					}
 				}
-				
+				*/
+				/*
 				for (Asteroid *a : Asteroid::asteroids)
 				{
 					for (int i = 0; i < Missile::missiles.size(); i++)
@@ -917,22 +920,50 @@ int main(int, char **)
 						}
 					}
 				}
-				
+				*/
 				/*
-				for (Asteroid *a : asteroids)
+				for (Asteroid *a : Asteroid::asteroids)
 				{
-					for (int i = 0; i < Missile::missiles.size(); i++)
+					if ((int)a->targedIDS.size() > 0)
 					{
-						if (Missile::missiles.at(i)->ID == a->targetID) //falls diese id in target ids drinn ist
+						for (int idCount = 0; idCount < a->targedIDS.size(); idCount++)
 						{
-							if (Missile::missiles.at(i)->alive == false)
+							for (int i = 0; i < Missile::missiles.size(); i++)
 							{
-								a->targetID = 0; //aus der liste den wert entfernen
+								//std::cout << "size: " << (int)a->targedIDS.size() << "\n";
+								if (Missile::missiles.at(i)->ID == (int)a->targedIDS.at(idCount))//falls diese id in target ids drinn ist
+								{
+									if (Missile::missiles.at(i)->alive == false)
+									{
+										if ((int)a->targedIDS.size() > 1)
+										{
+											//std::cout << "size: " <<(int)a->targedIDS.size() << "\n";
+											a->targedIDS.pop_back(); //aus der liste den wert entfernen
+										}
+									}
+								}
 							}
 						}
 					}
 				}
 				*/
+				for (Asteroid *a : Asteroid::asteroids)
+				{
+					for (Missile *m : Missile::missiles)
+					{
+						if (m->alive == false && (int)a->targedIDS.size() > 0)
+						{
+							for (int i = 0; i < a->targedIDS.size(); i++)
+							{
+								if (m->ID == (int)a->targedIDS.at(i))
+								{
+									a->targedIDS.pop_back();
+								}
+							}
+						}
+					}
+				}
+				
 				for (Enemy *e : enemies)
 				{
 					for (int i = 0; i < Missile::missiles.size(); i++)
