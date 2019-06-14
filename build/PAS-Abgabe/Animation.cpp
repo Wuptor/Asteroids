@@ -22,7 +22,7 @@ Animation::Animation(int startx, int starty, int animwidth, int animheight, SDL_
 	frametime = 0;
 	rotation = _rotation;
 	playing = true;
-	loop = false;
+	loop = false; //bessere implementierung
 	Used = _used;
 	animSpeed = _animspeed;
 }
@@ -57,7 +57,7 @@ void Animation::update()
 	}
 }
 
-void Animation::updatePos(int x, int y, int _rotation)
+void Animation::updatePos(int x, int y, int _rotation) 
 {
 	AnimPosition.x = x - AnimPosition.w / 2;
 	AnimPosition.y = y - AnimPosition.h / 2;

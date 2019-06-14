@@ -1,15 +1,21 @@
-﻿D:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
-  Missile.cpp
-d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(15): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(38): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(39): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(51): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(55): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(56): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-d:\phili\documents\repo\asteroids\build\pas-abgabe\missile.cpp(67): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  Asteroid.cpp
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(12): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(30): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(48): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(49): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(50): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(96): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(97): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(100): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(108): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(119): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(123): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(134): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\phglas\documents\repos\asteroids\build\pas-abgabe\asteroid.cpp(141): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Generating code
-  2 of 1163 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  4 of 1162 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    6 functions had inline decision re-evaluated but remain unchanged
+    3 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  PAS-Abgabe.vcxproj -> D:\phili\Documents\repo\Asteroids\build\PAS-Abgabe\..\exe\x64\Release\PAS-Abgabe.exe
+  PAS-Abgabe.vcxproj -> C:\Users\phglas\Documents\Repos\Asteroids\build\PAS-Abgabe\..\exe\x64\Release\PAS-Abgabe.exe

@@ -1,8 +1,9 @@
 #pragma once
-#include "Object.h" 
+//#include "Object.h" 
 #include "Asteroid.h"
 #include "Enemy.h"
 #include <iostream>
+
 
 class Missile : public Object //evtl eMissile und Missile zusammenführen --> Missile ist basically eMissile aber trifft den spieler und hat ne andere animation/sprite
 {

@@ -5,6 +5,7 @@ std::vector<Missile*> Missile::missiles;
 
 Missile::Missile(float X, float Y, int ROTATION, bool targetSeeking) : Object(missile)
 {
+	texture = ResourceDatabase::Textures["missile"];
 	if (X == NULL || Y == NULL) //warum?
 	{
 		posX = 100;

@@ -20,7 +20,7 @@ playerShield(false), shieldActice(false), hitByEnemy(false), Object(player)
 	{
 		Object health(Object::Type::neutral);
 		health.texture = ResourceDatabase::Textures["pHealthFull"];
-		health.DrawObject = {615 - (i*25),5,20,40};
+		health.DrawObject = { 615 - (i * 25),5,20,40 };
 		playerHealth.push_back(health);
 	}
 }
@@ -30,7 +30,7 @@ Player::~Player()
 {
 }
 
-void Player::update() 
+void Player::update()
 {
 	handleInput();
 	if (lifeCount == 1)
@@ -84,6 +84,7 @@ void Player::update()
 	drawShield.x = posX - drawShield.w / 2;
 	drawShield.y = posY - drawShield.h / 2;
 	KeepInField();
+	CheckCollissionWithOtherObjects();
 }
 
 void Player::handleInput()
@@ -135,25 +136,64 @@ void Player::handleInput()
 			else //auf switch case umstellen default == exception
 			{
 				Missile *m = new Missile(posX, posY, rotation, targetSeeking);
-				Missile::missiles.push_back(m);
+				//Missile::missiles.push_back(m);
+				Object::Entities.push_back(m);
 			}
 			fireCounter = 0;
 		}
 	}
 }
 
-void Player::TriggerKillRadius(std::vector<Object*> list, float killradius)
+void Player::TriggerKillRadius(float killradius)
 {
 	Object Deathcircle(Object::Type::neutral);
 	Deathcircle.posX = posX;
 	Deathcircle.posY = posY;
 	Deathcircle.radius = killradius;
-	for (Object* object : list)
+	for (Object* object : Object::Entities)
 	{
 		if (object->CheckCollision(&Deathcircle) && object->mObjectType != player)
 		{
 			object->alive = false;
 			//object->anim->playing = false; //evtl anim an object adden
 		}
+	}
+}
+
+void Player::CheckCollissionWithOtherObjects()
+{
+	if (alive == true) //evtl brauch ich das gar nicht mehr
+	{
+		for (Object* object : Object::Entities) //irgendwie hinbekommen das tote objekte keine animation mehr spielen
+		{
+			//frage: will ich das der letzte gegner der mich trifft auch "explodier"? oder nicht? wenn ja dann hier object alive = false
+			if (object->mObjectType == asteroid || object->mObjectType == enemy || object->mObjectType == emissile)
+			{
+				if (CheckCollision(object) && shieldActice == false)
+				{
+					hitByEnemy = true;
+				}
+			}
+		}
+	}
+	if (hitByEnemy)
+	{
+		hitByEnemy = false;
+		lifeCount -= 1;
+		playerHealth.at(lifeCount).texture = ResourceDatabase::Textures["pHealthEmpty"];
+		if (lifeCount > 0)
+		{
+			Animation* t = new Animation((int)posX - 150, (int)posY - 150, 300, 300, ResourceDatabase::Textures["shockWaveAnim"], 9, 1, 0, 3);
+			Animation::animations.push_back(t);
+			TriggerKillRadius(150);
+		}
+		else
+		{
+			alive = false;
+			//TriggerEndGame = true; //game manager --> check if player still alive
+			Animation* t = new Animation((int)posX - 50, (int)posY - 50, 100, 100, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
+			Animation::animations.push_back(t);
+		}
+
 	}
 }

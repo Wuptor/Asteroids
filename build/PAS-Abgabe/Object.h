@@ -2,13 +2,14 @@
 #include <SDL.h>
 #include <vector>
 #include <deque>
+#include "ResourceDatabase.h"
 
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
 
 
-class Object
+class Object //object braucht noch eine animation --> animation darf nichtmehr von object erben ist ja auch eigenlich was anderes
 {
 public:
 	enum Type {player, asteroid, enemy, missile, emissile, pickup, neutral}; //Emissile mit Missile verschmelzen //neutral noch besser aufdröslen //evtl reicht es bei type --> player, lethal, nonlethal, nocollission oder so ähnlich
@@ -16,7 +17,7 @@ public:
 	~Object();
 
 	static int ObjectID;
-	static std::vector<Object>* Entities;
+	static std::vector<Object*> Entities;
 	Type mObjectType;
 	float posX, posY, radius, rotation; //vllt postion usw auf int umstellen
 	const int ID;

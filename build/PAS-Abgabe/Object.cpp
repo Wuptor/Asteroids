@@ -2,7 +2,7 @@
 #include "Object.h"
 
 int Object::ObjectID = 1; //object id usw fixen
-std::vector<Object>* Object::Entities;
+std::vector<Object*> Object::Entities; //daran denken das alle objects sich auch mit sich selbst vergleichen
 
 Object::Object(Type _type) : ID(ObjectID), alive(true), posX(0), posY(0), width(0), height(0), rotation(0), radius(0), mObjectType(_type)
 {

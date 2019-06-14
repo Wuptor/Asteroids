@@ -9,7 +9,7 @@
 
 #include "SDL.h"
 #include <SDL_ttf.h>
-#include "ResourceDatabase.h"
+//#include "ResourceDatabase.h"
 //#include "Asteroid.h"
 #include "Player.h"
 //#include "Missile.h"
@@ -38,6 +38,10 @@
 //vllt fürs visuelle --> 1. es gibt ein max anzahl an verfolgenden missiles pro gegner/asteroid , 2. alle missiles haben einen leicht unterschiedlichen turningspeed
 //neues targeting ist sehr slow --> n² evtl nochmal überarbeiten --> trotzdem neues system verwenden
 //maybe ein find id oder so einbauen
+//class GameManager / evtl irgendeine Spawn classe
+//warum asteroiden plötzlich so schnell?
+//nach asteroiden --> enemies --> animationen
+//asteroids nochmal verbessern
 
 #define SCREEN_WIDTH  640 
 #define SCREEN_HEIGHT 480
@@ -68,7 +72,7 @@ bool CheckCollisionHCircle(Object* one, Object *second) //auch in object was ist
 
 }
 
-
+/*
 void TriggerKillRadius(std::vector<Asteroid*> list, Player P, float killradius)
 {
 	Object Deathcircle(Object::Type::neutral);
@@ -112,9 +116,9 @@ void TriggerKillRadius(std::vector<Enemy*> list, Player P, float killradius)
 	}
 
 }
-
-
-void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, SDL_Texture * _used1, SDL_Texture* _used2)
+*/
+/*
+void SpawnAsteroids(int _aCount, float _posX, float _posY, int _wah, SDL_Texture * _used1, SDL_Texture* _used2)
 {
 	SDL_Texture* UsedAnim;
 
@@ -170,19 +174,10 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 					a->posY = SCREEN_HEIGHT;
 				}
 			}
-			/*
-			float x = rand() % SCREEN_WIDTH;
-			float y = rand() % SCREEN_HEIGHT;
-			Asteroid *a = new Asteroid(x, y, _wah, UsedAnim);
-			while (x == P.posX || y == P.posY)
-			{
-				x = rand() % SCREEN_WIDTH;
-				y = rand() % SCREEN_HEIGHT;
-			}
-			*/
 			a->anim->updatePos(a->posX, a->posY, a->rotation);
 			Animation::animations.push_back(a->anim);
 			Asteroid::asteroids.push_back(a);
+			Object::Entities.push_back(a);
 		}
 	}
 	else //für die kleinen asteroids oder?
@@ -204,7 +199,7 @@ void SpawnAsteroids(Player P, int _aCount, float _posX, float _posY, int _wah, S
 		}
 	}
 }
-
+*/
 void SpawnPickup(float _x, float _y, SDL_Texture* _used)
 {
 	if (pickups.size() <= 10)
@@ -280,6 +275,8 @@ int main(int, char **)
 	ResourceDatabase::Textures.insert(std::make_pair("pHealthEmpty", ResourceDatabase::ILoadImage("../../assets/PlayerHealthEmpty.bmp", Renderer)));
 
 	ResourceDatabase::Textures.insert(std::make_pair("TargetSeekingLeftovers", ResourceDatabase::ILoadImage("../../assets/AsteroidsTargetSeeking.bmp", Renderer)));
+
+	//ResourceDatabase::Animations.insert(std::make_pair("FloatingAsteroid", Animation());
 
 	//ResourceDatabase::Textures.insert(std::make_pair("PlayerSpriteSheet", ResourceDatabase::ILoadImage("../../assets/PlayerSpriteSheet.bmp", Renderer)));
 
@@ -388,30 +385,37 @@ int main(int, char **)
 			int asteroidSpawnCounter = 0;
 			int asteroidspawnTime = 0;
 			enemynumber = 0;
-			SpawnAsteroids(player, 5, NULL, NULL, 75, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
+			for (int i = 0; i < 5; i++)
+			{
+				Object::Entities.push_back(new Asteroid(NULL, NULL, 75));
+			}
 			MainGame = true;
 			PreGame = false;
 			while (MainGame)
 			{
 				player.update();
-				/*
-				for (int i = 0; i < Object::Entities->size(); i++)
+				
+				for (Object* object : Object::Entities)
 				{
-					Object::Entities->at(i).update();
+					object->update();
 				}
-				*/
+
 				for (EMissile *em : EMissile::eMissiles)
 				{
 					em->update();
 				}
+				/*
 				for (Missile *m : Missile::missiles)
 				{
 					m->update();
 				}
+				*/
+				/*
 				for (Asteroid* c : Asteroid::asteroids)
 				{
 					c->update();
 				}
+				*/
 				for (Enemy* e : Enemy::enemies)
 				{
 					e->update(player);
@@ -431,7 +435,7 @@ int main(int, char **)
 					asteroidspawnTime++;
 					if (asteroidspawnTime > (15 - enemynumber))
 					{
-						SpawnAsteroids(player, 1, NULL, NULL, 75, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
+						Object::Entities.push_back(new Asteroid(NULL, NULL, 75));
 						asteroidSpawnCounter--;
 						asteroidspawnTime = 0;
 					}
@@ -553,7 +557,8 @@ int main(int, char **)
 						}
 					}
 				}
-
+				 //asteroid collission
+				/*
 				for (int i = 0; i < Missile::missiles.size(); i++)
 				{
 					for (int j = 0; j < Asteroid::asteroids.size(); j++)
@@ -576,12 +581,13 @@ int main(int, char **)
 								}
 								SpawnPickup(Asteroid::asteroids.at(j)->posX, Asteroid::asteroids.at(j)->posY, ResourceDatabase::Textures["Pickups"]);
 								if (Asteroid::asteroids.at(j)->width > 40 && player.megaShot == false) {
-									SpawnAsteroids(player, Asteroid::asteroids.at(j)->asteroidsInside, Asteroid::asteroids.at(j)->posX, Asteroid::asteroids.at(j)->posY, 30, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
+									SpawnAsteroids(Asteroid::asteroids.at(j)->asteroidsInside, Asteroid::asteroids.at(j)->posX, Asteroid::asteroids.at(j)->posY, 30, ResourceDatabase::Textures["AsteroidAnim1"], ResourceDatabase::Textures["AsteroidAnim2"]);
 								}
 							}
 						}
 					}
 				}
+				*/
 				for (int i = 0; i < Missile::missiles.size(); i++)
 				{
 					for (Enemy* e : Enemy::enemies)
@@ -635,7 +641,7 @@ int main(int, char **)
 					}
 				}
 
-
+				/*
 				if (player.alive == true)
 				{
 					for (Asteroid *a : Asteroid::asteroids)
@@ -701,7 +707,7 @@ int main(int, char **)
 					}
 
 				}
-
+				
 
 				if (player.hitByEnemy)
 				{
@@ -716,7 +722,7 @@ int main(int, char **)
 						Animation::animations.push_back(t);
 					}
 				}
-
+				*/
 				for (Pickup *p : pickups)
 				{
 					p->Update();
@@ -763,11 +769,11 @@ int main(int, char **)
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 4), Pickup::pickupn.end());
 							Pickup::pickupn.erase(std::remove(Pickup::pickupn.begin(), Pickup::pickupn.end(), 5), Pickup::pickupn.end());
 						}
-						if (p->spritePosX == 6 && p->spritePosY == 0)
+						if (p->spritePosX == 6 && p->spritePosY == 0) //holy grenade --> bisschen überarbeiten
 						{
-							TriggerKillRadius(Asteroid::asteroids, player, 500);
-							TriggerKillRadius(Enemy::enemies, player, 500);
-							TriggerKillRadius(EMissile::eMissiles, player, 500);
+							//TriggerKillRadius(Asteroid::asteroids, player, 500);
+							//TriggerKillRadius(Enemy::enemies, player, 500);
+							//TriggerKillRadius(EMissile::eMissiles, player, 500);
 							Animation* a = new Animation((int)player.posX - 250, (int)player.posY - 250, 500, 500, ResourceDatabase::Textures["ExplosionAnim"], 6, 1, 0, 6);
 							Animation::animations.push_back(a);
 						}
@@ -991,6 +997,7 @@ int main(int, char **)
 						}
 					}
 				}
+				/*
 				for (std::vector<Asteroid*>::iterator itr = Asteroid::asteroids.begin(); itr != Asteroid::asteroids.end(); )
 				{
 					if ((*itr)->alive == false)
@@ -1000,7 +1007,8 @@ int main(int, char **)
 					else
 						++itr;
 				}
-
+				*/
+				/*
 				for (std::vector<Missile*>::iterator itr = Missile::missiles.begin(); itr != Missile::missiles.end(); )
 				{
 					if ((*itr)->alive == false)
@@ -1008,7 +1016,7 @@ int main(int, char **)
 					else
 						++itr;
 				}
-
+				*/
 				for (std::vector<Pickup*>::iterator itr = pickups.begin(); itr != pickups.end(); )
 				{
 					if ((*itr)->alive == false)
@@ -1037,6 +1045,20 @@ int main(int, char **)
 				{
 					if ((*itr)->playing == false)
 						itr = Animation::animations.erase(itr);
+					else
+						++itr;
+				}
+
+				for (std::vector<Object*>::iterator itr = Object::Entities.begin(); itr != Object::Entities.end(); )
+				{
+					if ((*itr)->alive == false)
+					{ 
+						if ((*itr)->mObjectType == Object::enemy || (*itr)->mObjectType == Object::asteroid)
+						{
+							temporaryScore += 10;
+						}
+						itr = Object::Entities.erase(itr); //je nach type was anderes machen
+					}
 					else
 						++itr;
 				}
@@ -1084,6 +1106,10 @@ int main(int, char **)
 					{
 						SDL_RenderCopyEx(Renderer, ResourceDatabase::Textures["playerShield"], NULL, &player.drawShield, player.rotation + 90, NULL, SDL_FLIP_NONE);
 					}
+				}
+				for (Object* object : Object::Entities) //need texture layer
+				{
+					SDL_RenderCopyEx(Renderer, object->texture , NULL, &object->DrawObject, object->rotation + 90, NULL, SDL_FLIP_NONE);
 				}
 				for (Object o : player.playerHealth)
 				{

@@ -1,6 +1,6 @@
 #pragma once
-#include "Object.h"
-#include "ResourceDatabase.h"
+//#include "Object.h"
+#//include "ResourceDatabase.h"
 #include "Missile.h"
 
 class Player : public Object
@@ -20,5 +20,6 @@ public:
 	std::vector<Object> playerHealth;
     void update() override;
 	void handleInput(); //irgendwann auf inputmanager erweitern
-	void TriggerKillRadius(std::vector<Object*> list, float killradius);
+	void TriggerKillRadius(float killradius);
+	void CheckCollissionWithOtherObjects();
 };
